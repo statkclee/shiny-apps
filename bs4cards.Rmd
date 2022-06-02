@@ -2,6 +2,10 @@
 title: "카드 Shiny 앱"
 format: html
 editor: source
+output:
+  html_document:
+    theme:
+      version: 4
 editor_options: 
   chunk_output_type: console
 ---
