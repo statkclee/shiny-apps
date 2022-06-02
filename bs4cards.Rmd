@@ -1,0 +1,85 @@
+---
+title: "카드 Shiny 앱"
+format: html
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+library(tidyverse)
+library(rvest)
+library(lubridate)
+```
+
+
+
+# 기본 
+
+[bs4cards](https://bs4cards.djnavarro.net/articles/articles/layouts.html)
+
+
+
+```{r card-groups, include=FALSE}
+library(bs4cards)
+
+
+squarnicode_emoji <- list(
+  tibble(
+    title = "Squarnicode 1",
+    image = "https://raw.githubusercontent.com/matt-dray/faxcrayon/main/img/2021-08-19_squarnicode_crosses.png",
+    text = "Original",
+    link = "https://gist.github.com/matt-dray/a491a3af1a1b359439947ced07e52fab",
+    header = "2021-08-19"
+  ),
+  tibble(
+    title = "Squarnicode 2",
+    image = "https://raw.githubusercontent.com/matt-dray/faxcrayon/main/img/2021-08-19_squarnicode_crosses.png",
+    text = "Original",
+    link = "https://gist.github.com/matt-dray/a491a3af1a1b359439947ced07e52fab",
+    header = "2021-08-19"
+  ),
+  tibble(
+    title = "Squarnicode 3",
+    image = "https://raw.githubusercontent.com/matt-dray/faxcrayon/main/img/2021-08-19_squarnicode_crosses.png",
+    text = "Original",
+    link = "https://gist.github.com/matt-dray/a491a3af1a1b359439947ced07e52fab",
+    header = "2021-08-19"
+  )
+)
+
+```
+
+```{r card-place, echo=FALSE, eval = FALSE}
+# card_list <- c(
+#   squarnicode_emoji
+# )
+library(bs4cards)
+tbl <- squarnicode_emoji %>% 
+  enframe() %>% 
+  unnest(value)
+
+tbl %>% 
+  cards(
+    title = title,
+    text = text,
+    link = link,
+    image = image,
+    footer = header,
+    layout = "label-left", 
+        breakpoint = 5, 
+    width = 4
+  )
+
+```
+
+
+```{r, results='hold', message=FALSE}
+cards(data = galleries[1,], image = image_url, width = 1)
+cards(data = galleries[1,], image = image_url, width = 2)
+cards(data = galleries[1,], image = image_url, width = 3)
+cards(data = galleries[1,], image = image_url, width = 4)
+cards(data = galleries[1,], image = image_url, width = 5)
+```
