@@ -11,6 +11,8 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
+## [GitHub Repo.] statkclee/shiny-apps
+
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE,
                       comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
 library(tidyverse)
@@ -34,9 +36,9 @@ shiny_list <- list(
   ),
   tibble(
     title = "실용통계",
-    image = "assets/hsData-favicon-60x60.png",
+    image = "assets/hsData-favicon-180x180.png",
     text = "실용통계 데이터셋",
-    link = "flexdashboard/hsData.html",
+    link = "https://statkclee.github.io/shiny-apps/flexdashboard/hsData.html",
     footer = "2022-06-03"
   ),
   tibble(
