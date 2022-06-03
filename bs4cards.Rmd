@@ -11,7 +11,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE,
                       comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
 library(tidyverse)
 library(rvest)
@@ -20,70 +20,52 @@ library(lubridate)
 
 
 
-# 기본 
 
-[bs4cards](https://bs4cards.djnavarro.net/articles/articles/layouts.html)
-
-
-
-```{r card-groups, include=FALSE}
+```{r card-groups}
 library(bs4cards)
 
-
-squarnicode_emoji <- list(
+shiny_list <- list(
   tibble(
-    title = "Squarnicode 1",
-    image = "https://raw.githubusercontent.com/matt-dray/faxcrayon/main/img/2021-08-19_squarnicode_crosses.png",
-    text = "Original",
-    link = "https://gist.github.com/matt-dray/a491a3af1a1b359439947ced07e52fab",
-    header = "2021-08-19"
+    title = "원주율(π)",
+    image = "assets/images/life-of-pi.gif",
+    text = "몬테카를로 모의시험 방법으로 원주율 계산 (Shiny App)",
+    link = "https://dl-dashboard.shinyapps.io/life_of_pi/",
+    footer = "2022-06-02"
   ),
   tibble(
-    title = "Squarnicode 2",
-    image = "https://raw.githubusercontent.com/matt-dray/faxcrayon/main/img/2021-08-19_squarnicode_crosses.png",
-    text = "Original",
-    link = "https://gist.github.com/matt-dray/a491a3af1a1b359439947ced07e52fab",
-    header = "2021-08-19"
+    title = "실용통계",
+    image = "assets/hsData-favicon-60x60.png",
+    text = "실용통계 데이터셋",
+    link = "flexdashboard/hsData.html",
+    footer = "2022-06-03"
   ),
   tibble(
-    title = "Squarnicode 3",
-    image = "https://raw.githubusercontent.com/matt-dray/faxcrayon/main/img/2021-08-19_squarnicode_crosses.png",
-    text = "Original",
-    link = "https://gist.github.com/matt-dray/a491a3af1a1b359439947ced07e52fab",
-    header = "2021-08-19"
+    title = "무제",
+    image = "assets/images/to-do.jpg",
+    text = "채널 고정, 본방 사수",
+    link = "https://r2bit.com/",
+    footer = "2022-06-XX"
   )
 )
 
-```
-
-```{r card-place, echo=FALSE, eval = FALSE}
-# card_list <- c(
-#   squarnicode_emoji
-# )
-library(bs4cards)
-tbl <- squarnicode_emoji %>% 
+shiny_tbl <- shiny_list %>% 
   enframe() %>% 
   unnest(value)
 
-tbl %>% 
+shiny_tbl %>% 
   cards(
     title = title,
     text = text,
     link = link,
     image = image,
-    footer = header,
+    footer = footer,
     layout = "label-left", 
-        breakpoint = 5, 
-    width = 4
+    width = 3
   )
-
 ```
 
 
-```{r, results='hold', message=FALSE}
-cards(data = galleries[1,], image = image_url, width = 1)
-cards(data = galleries[1,], image = image_url, width = 2)
-cards(data = galleries[1,], image = image_url, width = 3)
-cards(data = galleries[1,], image = image_url, width = 4)
-cards(data = galleries[1,], image = image_url, width = 5)
-```
+# 개발방법 
+
+[bs4cards](https://bs4cards.djnavarro.net/articles/articles/layouts.html)
+
