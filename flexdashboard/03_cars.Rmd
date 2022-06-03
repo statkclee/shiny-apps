@@ -1,0 +1,76 @@
+
+차량정보 {data-icon="fa-car-alt"}
+=====================================  
+
+Inputs {.sidebar}
+-------------------------------------
+
+### 데이터
+
+
+```{r hsdata-select}
+# devtools::install_github("kent37/summarywidget")
+# devtools::install_github("bit2r/hsData")
+library(hsData)
+
+
+shared_cars <- SharedData$new(hsData::cars)
+
+filter_slider("중량", 
+              "차량 중량(kg)", 
+              shared_cars, 
+              ~중량, 
+              width = "100%")
+
+filter_slider("연비", 
+              "연비(km/l)", 
+              shared_cars, 
+              ~연비, 
+              width = "100%")
+
+
+```
+
+
+Column {data-width=300}
+-------------------------------------
+
+### 데이터보기
+
+```{r about-dataset}
+
+DT::datatable(shared_cars, filter = 'top')
+
+```
+
+Column {data-width=500}
+-------------------------------------
+   
+### 시각화
+
+```{r battery-scatterplot}
+lm_eqn <- function(df){
+    m <- lm(연비 ~ 중량, df);
+    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
+         list(a = format(unname(coef(m)[1]), digits = 2),
+              b = format(unname(coef(m)[2]), digits = 2),
+             r2 = format(summary(m)$r.squared, digits = 3)))
+    as.character(as.expression(eq));
+}
+
+gg <- shared_cars %>% 
+  ggplot(aes( x = 중량, y = 연비)) +
+    geom_point(size = 2) +
+    geom_smooth(method='lm', se= FALSE) +
+    theme_election() +
+    labs(title = "국내출시 차량 중량과 연비 관계",
+         subtitle = "산점도(Scatter Plot)",
+         x = "중량 (kg)",
+         y = "연비 (km/L)",
+         caption = "출처: 통계개발원 실용통계, P78") 
+  # geom_text(x = 1130, y = 9, label = lm_eqn(shared_cars$data()), parse = TRUE, size = 5)  
+
+ggplotly(gg) %>% 
+  highlight("plotly_hover")
+
+```   

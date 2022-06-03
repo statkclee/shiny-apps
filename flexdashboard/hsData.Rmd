@@ -28,5 +28,15 @@ source(glue::glue("{here::here()}/flexdashboard/setup.R"), encoding="UTF-8")
 ```{r child="flexdashboard/02_battery.Rmd", encoding="UTF-8"}
 ```
 
-    
+<!-- 차량정보 -->
+
+```{r child="flexdashboard/03_cars.Rmd", encoding="UTF-8"}
+```
+
+
+<!-- 턱걸이 -->
+
+```{r child="flexdashboard/04_pullup.Rmd", encoding="UTF-8"}
+```
+
 

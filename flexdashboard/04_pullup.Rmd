@@ -1,0 +1,55 @@
+
+턱걸이 {data-icon="fa-car-alt"}
+=====================================  
+
+Inputs {.sidebar}
+-------------------------------------
+
+### 데이터
+
+
+```{r hsdata-select}
+library(hsData)
+
+shared_pullup <- SharedData$new( hsData::pullup)
+
+filter_slider("턱걸이_횟수", 
+              "턱걸이 횟수", 
+              shared_pullup, 
+              column = ~턱걸이_횟수, 
+              width = "100%")
+
+```
+
+
+Column {data-width=300}
+-------------------------------------
+
+### 데이터보기
+
+```{r about-dataset}
+
+DT::datatable(shared_pullup, filter = 'top')
+
+```
+
+Column {data-width=500}
+-------------------------------------
+   
+### 시각화
+
+```{r battery-scatterplot}
+
+gg <- shared_pullup %>% 
+  ggplot(aes( x = 턱걸이_횟수)) +
+    geom_histogram() +
+    theme_election() +
+    labs(title = "고등학생 24명 턱컬이 횟수",
+         subtitle = "상자그림(Boxplot), 단위:횟수",
+         y = "턱걸이 횟수",
+         caption = "출처: 통계개발원 실용통계, P73") 
+
+ggplotly(gg) %>% 
+  highlight("plotly_hover")
+
+```   

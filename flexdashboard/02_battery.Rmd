@@ -9,10 +9,9 @@ Inputs {.sidebar}
 
 
 ```{r hsdata-select}
- devtools::install_github("kent37/summarywidget")
+# devtools::install_github("kent37/summarywidget")
 # devtools::install_github("bit2r/hsData")
 library(hsData)
-library(summarywidget)
 
 
 shared_battery <- SharedData$new(hsData::battery)
@@ -43,14 +42,14 @@ Column {data-width=300}
 
 ```{r about-dataset}
 
-DT::datatable(shared_battery)
+DT::datatable(shared_battery, filter = 'top')
 
 ```
 
 Column {data-width=500}
 -------------------------------------
    
-### 요약통계량
+### 시각화
 
 ```{r battery-scatterplot}
 gg <- shared_battery %>% 
