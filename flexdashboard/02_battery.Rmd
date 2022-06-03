@@ -1,0 +1,66 @@
+
+건전지 수명 {data-icon="fa-car-alt"}
+=====================================  
+
+Inputs {.sidebar}
+-------------------------------------
+
+### 데이터
+
+
+```{r hsdata-select}
+ devtools::install_github("kent37/summarywidget")
+# devtools::install_github("bit2r/hsData")
+library(hsData)
+library(summarywidget)
+
+
+shared_battery <- SharedData$new(hsData::battery)
+
+filter_select(
+  id = "회사명",
+  label = "회사명",
+  sharedData = shared_battery,
+  group = ~회사명,
+  multiple = FALSE,
+  allLevels = FALSE
+)
+
+filter_slider("battery", 
+              "건전지 수명", 
+              shared_battery, 
+              ~건전지_수명, 
+              width = "100%")
+
+
+```
+
+
+Column {data-width=300}
+-------------------------------------
+
+### 데이터보기
+
+```{r about-dataset}
+
+DT::datatable(shared_battery)
+
+```
+
+Column {data-width=500}
+-------------------------------------
+   
+### 요약통계량
+
+```{r battery-scatterplot}
+gg <- shared_battery %>% 
+  ggplot(aes(x=회사명, y=건전지_수명)) +
+    geom_boxplot() +
+    geom_jitter() +
+    theme_election()
+
+ggplotly(gg) %>% 
+  highlight("plotly_hover")
+
+```   
+

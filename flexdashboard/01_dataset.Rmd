@@ -1,0 +1,57 @@
+
+데이터셋 {data-icon="fa-car-alt"}
+=====================================  
+
+Column {data-width=200}
+-------------------------------------
+
+### 데이터
+
+
+```{r hsdata-select}
+
+# devtools::install_github("bit2r/hsData")
+library(hsData)
+
+hsData_names <- data(package="hsData")$results %>% 
+  as.data.frame() %>% 
+  pull(Item)
+
+# listviewer::jsonedit(data(package="hsData"))
+
+hsData_tbl <- data(package="hsData")$results %>% 
+  as.data.frame() %>% 
+  select(name = Item, Title,) %>% 
+  mutate(data_string = glue::glue("hsData::{name}")) %>% 
+  mutate(data = map(data_string, lazyeval::lazy_eval ) ) %>% 
+  select(name, 설명 = Title, data)
+
+library(tidyverse)  
+
+shared_ev <- SharedData$new(hsData_tbl, key = ~name)
+
+filter_select(
+  id = "데이터",
+  label = "데이터셋",
+  sharedData = shared_ev,
+  group = ~name,
+  multiple = FALSE,
+  allLevels = FALSE
+)
+
+
+
+```
+
+
+Column {data-width=800}
+-------------------------------------
+
+### 데이터셋 상세
+
+```{r about-dataset}
+
+DT::datatable(shared_ev)
+
+```
+
