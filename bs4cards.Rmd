@@ -31,7 +31,7 @@ shiny_list <- list(
     title = "원주율(π)",
     image = "assets/images/life-of-pi.gif",
     text = "몬테카를로 모의시험 방법으로 원주율 계산 (Shiny App)",
-    link = "https://dl-dashboard.shinyapps.io/life_of_pi/",
+    link = "https://r2bit.shinyapps.io/life_of_pi/",
     footer = "2022-06-02"
   ),
   tibble(
@@ -45,7 +45,7 @@ shiny_list <- list(
     title = "숫자 맞추기",
     image = "assets/favicon-guess-number.png",
     text = "기회는 3번, 1~20사이 숫자 맞추기",
-    link = "https://dl-dashboard.shinyapps.io/guess_number/",
+    link = "https://r2bit.shinyapps.io/guess_number/",
     footer = "2022-06-04"
   )
 )
