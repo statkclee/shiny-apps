@@ -12,18 +12,29 @@ shinyServer(function(input, output) {
       guess(input$guess)
   })
   
+  observeEvent({
+    counter()},
+    { req(guess())
+      if (counter() > 3 ){
+        updateTabsetPanel(
+          inputId = "guessing_area",
+          selected = "incorrect_panel"
+      ) 
+     } else if (guess() == number) {
+        updateTabsetPanel(
+          inputId = "guessing_area",
+          selected = "correct_panel"
+      )
+    }
+  })
+  
+
   output$feedback <- renderText({
-    req(guess(), counter())
-    if (counter() > 3) {
-      paste0("기회를 3번 모두 사용하셨습니다!!!")
-    } else {
-      if(guess() < number) {
+    req(guess())
+    if(guess() < number) {
       "추측한 숫자가 너무 작아요"
-      } else if(guess() > number) {
+    } else if(guess() > number) {
         "추측한 숫자가 너무 커요"
-      } else {
-        "제대로 맞췄습니다!!! 축하합니다."
-      }
     }
   })
 

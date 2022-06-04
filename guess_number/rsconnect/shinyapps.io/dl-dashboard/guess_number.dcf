@@ -1,0 +1,13 @@
+name: guess_number
+title: guess_number
+username:
+account: dl-dashboard
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6430002
+bundleId: 5977205
+url: https://dl-dashboard.shinyapps.io/guess_number/
+when: 1654337020.63879
+lastSyncTime: 1654337020.63883
+asMultiple: FALSE
+asStatic: FALSE

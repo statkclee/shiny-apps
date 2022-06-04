@@ -42,11 +42,11 @@ shiny_list <- list(
     footer = "2022-06-03"
   ),
   tibble(
-    title = "무제",
-    image = "assets/images/to-do.jpg",
-    text = "채널 고정, 본방 사수",
-    link = "https://r2bit.com/",
-    footer = "2022-06-XX"
+    title = "숫자 맞추기",
+    image = "assets/favicon-guess-number.png",
+    text = "기회는 3번, 1~20사이 숫자 맞추기",
+    link = "https://dl-dashboard.shinyapps.io/guess_number/",
+    footer = "2022-06-04"
   )
 )
 
