@@ -1,0 +1,91 @@
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans+CJK+KR);
+/* @import url('https://fonts.googleapis.com/css2?family=Inconsolata'); */
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic');
+/* @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR'); */
+
+.navbar-logo.pull-left {
+  padding-top:8px;
+}
+
+.nav-tabs-custom .nav-tabs li.active a {
+  font-family: "Nanum Gothic", sans-serif; 
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.nav-tabs-custom .nav-tabs li:not(.active) a {
+  font-family: "Nanum Gothic", sans-serif; 
+  font-size: 17px;
+}
+
+img{
+     max-width:48px;
+     max-height:48px;
+}
+
+/* ValueBox 1, 4, 5, 6 icon */
+
+.fa-one:before {
+    font-weight: 700;
+    content: '1';
+}
+
+.fa-four:before {
+    font-weight: 700;
+    content: '4';
+}
+
+
+.fa-five:before {
+    font-weight: 700;
+    content: '5';
+}
+
+.fa-six:before {
+    font-weight: 700;
+    content: '6';
+}
+
+/* 글꼴 */
+
+h1 { 
+  font-family: "Nanum Gothic", sans-serif; 
+  font-size: 30px; 
+}
+
+h2, h3 { 
+  font-family: "Noto Sans CJK KR", sans-serif; 
+  font-size: 20px; 
+}
+
+tt, code, pre { 
+  font-family: "Inconsolata", monospace; 
+  font-size: 15px; 
+}
+
+body { 
+  font-family: "Noto Sans CJK KR", serif; 
+  font-size: 15px; 
+}
+
+/* Valuebox 글꼴  */
+
+.value-box .value {
+  font-family: "Nanum Gothic", sans-serif; 
+  font-size: 30px;
+  font-weight: bold;
+  margin: 12px 0 3px 0;
+  white-space: nowrap;
+  padding: 0;
+} 
+
+.caption {
+  font-family: "Nanum Gothic", sans-serif; 
+  font-size: 30px;
+  margin: 10px 0 0 0;
+  font-weight: bold;
+  white-space: nowrap;
+  color: black;
+}
+
+
