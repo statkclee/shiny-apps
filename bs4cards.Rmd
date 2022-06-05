@@ -47,7 +47,14 @@ shiny_list <- list(
     text = "기회는 3번, 1~20사이 숫자 맞추기",
     link = "https://r2bit.shinyapps.io/guess_number/",
     footer = "2022-06-04"
-  )
+  ),
+  tibble(
+    title = "추론 (Inference)",
+    image = "assets/favicon-inference.png",
+    text = "가설 검정 - 평균과 비율에 대한 추론",
+    link = "https://r2bit.shinyapps.io/inference/",
+    footer = "2022-06-05"
+  )  
 )
 
 shiny_tbl <- shiny_list %>% 
