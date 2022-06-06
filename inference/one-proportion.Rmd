@@ -1,0 +1,265 @@
+
+
+1-비율 z-검정
+=======================================================================
+
+
+Sidebar Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+```{r one-proportion-ui}
+
+tags$br()
+tags$b("데이터")
+
+tags$b("표본 크기")
+numericInput("n_oneprop", "\\(n = \\)",
+             value = 30, min = 0, step = 1
+)
+
+radioButtons(
+  inputId = "propx_oneprop",
+  label = NULL,
+  choices = c(
+    "Proportion of success \\(\\hat{p}\\)" = "prop_true",
+    "Number of successes \\(x\\)" = "prop_false"
+  )
+)
+
+conditionalPanel(
+  condition = "input.propx_oneprop == 'prop_true'",
+  tags$b("성공 비율"),
+  numericInput("p_oneprop", "\\(\\hat{p} = \\)",
+               value = 0.2, min = 0, max = 1, step = 0.01
+  )
+)
+conditionalPanel(
+  condition = "input.propx_oneprop == 'prop_false'",
+  tags$b("성공 횟수"),
+  numericInput("x_oneprop", "\\(x = \\)",
+               value = 10, min = 0, step = 1
+  )
+)
+
+tags$b("가설검정")
+
+tags$p("1. 귀무가설")
+tags$p("\\( H_0 : p = \\)")
+
+numericInput("h0",
+             label = NULL,
+             value = 0.1, step = 0.1, width="100px")
+
+tags$p("2. 검정방향")
+radioButtons(
+  inputId = "alternative",
+  label = "대립가설",
+  inline = TRUE,
+  choices = c(
+    "\\( \\neq \\)" = "two.sided",
+    "\\( > \\)" = "greater",
+    "\\( < \\)" = "less"
+  )
+)
+
+
+tags$p("4. 유의수준")
+sliderInput("alpha",
+            "유의수준 \\(\\alpha = \\)",
+            min = 0.01,
+            max = 0.20,
+            value = 0.05
+)
+
+tags$br()
+
+tags$b("데이터와 코드 출처")
+tags$br()
+tags$a(href="https://cran.r-project.org/web/packages/distributions3/vignettes/one-sample-t-test.html", "ㄴ 데이터: t-검정, ")
+tags$br()
+tags$a(href="https://cran.r-project.org/web/packages/distributions3/vignettes/one-sample-z-confidence-interval.html", "ㄴ 데이터: z-검정")
+tags$br()
+tags$a(href="https://statsandr.com/blog/a-shiny-app-for-inferential-statistics-by-hand/", "ㄴ 코드")
+
+
+```
+
+Column {data-width=400}
+-------------------------------------
+
+### 가설검정
+
+
+```{r one-proportion-statistics}
+
+renderUI({
+    if ( input$propx_oneprop == "prop_true" ) {
+      test <- prop.z.test(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
+      test2 <- prop.z.test3(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
+      test_confint <- prop.z.test(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = "two.sided")
+      withMathJax(
+        tags$b("Data"),
+        br(),
+        paste0("\\(n =\\) ", round(test$n, 3)),
+        br(),
+        paste0("\\(\\hat{p} =\\) ", round(test$estimate, 3)),
+        br(),
+        paste0("\\(\\hat{q} = 1 - \\hat{p} =\\) ", round(1 - test$estimate, 3)),
+        br(),
+        helpText(paste0("\\( n\\hat{p} = \\) ", round(test$n * test$estimate, 3), " and \\( n(1-\\hat{p}) = \\) ", round(test$n * (1 - test$estimate), 3))),
+        helpText(paste0("Assumptions \\( n\\hat{p} \\geq 5\\) and \\( n(1-\\hat{p}) \\geq 5\\)", ifelse(test$n * test$estimate >= 5 & test$n * (1 - test$estimate) >= 5, " are met.", " are not met."))),
+        br(),
+        tags$b("Confidence interval"),
+        tags$em("(two-sided)"),
+        br(),
+        paste0(
+          (1 - input$alpha) * 100, "% CI for \\(p = \\hat{p} \\pm z_{\\alpha/2} \\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}} = \\) ",
+          round(test_confint$estimate, 3), "  \\( \\pm \\) ", "\\( ( \\)", round(qnorm(input$alpha / 2, lower.tail = FALSE), 3), " * ", round(test_confint$stderr, 3), "\\( ) \\) ", "\\( = \\) ",
+          "[", round(test_confint$conf.int[1], 3), "; ", round(test_confint$conf.int[2], 3), "]"
+        ),
+        br(),
+        br(),
+        tags$b("Hypothesis test"),
+        br(),
+        paste0("1. \\(H_0 : p = \\) ", test$null.value, " and \\(H_1 : p \\) ", ifelse(input$alternative == "two.sided", "\\( \\neq \\) ", ifelse(input$alternative == "greater", "\\( > \\) ", "\\( < \\) ")), test$null.value),
+        br(),
+        paste0(
+          "2. Test statistic : \\(z_{obs} = \\dfrac{\\hat{p} - p_0}{\\sqrt{\\dfrac{p_0(1-p_0)}{n}}} = \\) ",
+          "(", round(test2$estimate, 3), ifelse(test2$null.value >= 0, paste0(" - ", test2$null.value), paste0(" + ", abs(test2$null.value))), ") / ", round(test2$stderr, 3), " \\( = \\) ",
+          ifelse(test2$null.value >= 0 & test2$null.value <= 1, round(test2$statistic, 3), "Error: \\( p_0 \\) must be \\( 0 \\leq p_0 \\leq 1\\)")
+        ),
+        br(),
+        paste0(
+          "3. Critical value :", ifelse(input$alternative == "two.sided", " \\( \\pm z_{\\alpha/2} = \\pm z(\\)", ifelse(input$alternative == "greater", " \\( z_{\\alpha} = z(\\)", " \\( -z_{\\alpha} = -z(\\)")),
+          ifelse(input$alternative == "two.sided", input$alpha / 2, input$alpha), "\\()\\)", " \\( = \\) ",
+          ifelse(input$alternative == "two.sided", "\\( \\pm \\)", ifelse(input$alternative == "greater", "", " -")),
+          ifelse(input$alternative == "two.sided", round(qnorm(input$alpha / 2, lower.tail = FALSE), 3), round(qnorm(input$alpha, lower.tail = FALSE), 3))
+        ),
+        br(),
+        paste0("4. Conclusion : ", ifelse(test2$p.value < input$alpha, "Reject \\(H_0\\)", "Do not reject \\(H_0\\)")),
+        br(),
+        br(),
+        tags$b("Interpretation"),
+        br(),
+        paste0("At the ", input$alpha * 100, "% significance level, ", ifelse(test2$p.value < input$alpha, "we reject the null hypothesis that the true proportion is ", "we do not reject the null hypothesis that the true proportion is "), test2$null.value, " \\((p\\)-value ", ifelse(test2$p.value < 0.001, "< 0.001", paste0("\\(=\\) ", round(test2$p.value, 3))), ")", ".")
+      )
+    } else if ( input$propx_oneprop == "prop_false") {
+      test <- prop.z.test(x = input$x_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
+      test2 <- prop.z.test3(x = input$x_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
+      test_confint <- prop.z.test(x = input$x_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = "two.sided")
+      withMathJax(
+        tags$b("Data"),
+        br(),
+        paste0("\\(n =\\) ", round(test$n, 3)),
+        br(),
+        paste0("\\(\\hat{p} = \\dfrac{x}{n} = \\) ", test$x, " \\( / \\) ", test$n, " \\( = \\) ", round(test$estimate, 3)),
+        br(),
+        paste0("\\(\\hat{q} = 1 - \\hat{p} = \\) ", round(1 - test$estimate, 3)),
+        br(),
+        helpText(paste0("\\( n\\hat{p} = \\) ", round(test$n * test$estimate, 3), " and \\( n(1-\\hat{p}) = \\) ", round(test$n * (1 - test$estimate), 3))),
+        helpText(paste0("Assumptions \\( n\\hat{p} \\geq 5\\) and \\( n(1-\\hat{p}) \\geq 5\\)", ifelse(test$n * test$estimate >= 5 & test$n * (1 - test$estimate) >= 5, " are met.", " are not met."))),
+        br(),
+        tags$b("Confidence interval"),
+        tags$em("(two-sided)"),
+        br(),
+        paste0(
+          (1 - input$alpha) * 100, "% CI for \\(p = \\hat{p} \\pm z_{\\alpha/2} \\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}} = \\) ",
+          round(test_confint$estimate, 3), "  \\( \\pm \\) ", "\\( ( \\)", round(qnorm(input$alpha / 2, lower.tail = FALSE), 3), " * ", round(test_confint$stderr, 3), "\\( ) \\) ", "\\( = \\) ",
+          "[", round(test_confint$conf.int[1], 3), "; ", round(test_confint$conf.int[2], 3), "]"
+        ),
+        br(),
+        br(),
+        tags$b("Hypothesis test"),
+        br(),
+        paste0("1. \\(H_0 : p = \\) ", test$null.value, " and \\(H_1 : p \\) ", ifelse(input$alternative == "two.sided", "\\( \\neq \\) ", ifelse(input$alternative == "greater", "\\( > \\) ", "\\( < \\) ")), test$null.value),
+        br(),
+        paste0(
+          "2. Test statistic : \\(z_{obs} = \\dfrac{\\hat{p} - p_0}{\\sqrt{\\dfrac{p_0(1-p_0)}{n}}} = \\) ",
+          "(", round(test2$estimate, 3), ifelse(test2$null.value >= 0, paste0(" - ", test2$null.value), paste0(" + ", abs(test2$null.value))), ") / ", round(test2$stderr, 3), " \\( = \\) ",
+          ifelse(test2$null.value >= 0 & test2$null.value <= 1, round(test2$statistic, 3), "Error: \\( p_0 \\) must be \\( 0 \\leq p_0 \\leq 1\\)")
+        ),
+        br(),
+        paste0(
+          "3. Critical value :", ifelse(input$alternative == "two.sided", " \\( \\pm z_{\\alpha/2} = \\pm z(\\)", ifelse(input$alternative == "greater", " \\( z_{\\alpha} = z(\\)", " \\( -z_{\\alpha} = -z(\\)")),
+          ifelse(input$alternative == "two.sided", input$alpha / 2, input$alpha), "\\()\\)", " \\( = \\) ",
+          ifelse(input$alternative == "two.sided", "\\( \\pm \\)", ifelse(input$alternative == "greater", "", " -")),
+          ifelse(input$alternative == "two.sided", round(qnorm(input$alpha / 2, lower.tail = FALSE), 3), round(qnorm(input$alpha, lower.tail = FALSE), 3))
+        ),
+        br(),
+        paste0("4. Conclusion : ", ifelse(test2$p.value < input$alpha, "Reject \\(H_0\\)", "Do not reject \\(H_0\\)")),
+        br(),
+        br(),
+        tags$b("Interpretation"),
+        br(),
+        paste0("At the ", input$alpha * 100, "% significance level, ", ifelse(test2$p.value < input$alpha, "we reject the null hypothesis that the true proportion is ", "we do not reject the null hypothesis that the true proportion is "), test2$null.value, " \\((p\\)-value ", ifelse(test2$p.value < 0.001, "< 0.001", paste0("\\(=\\) ", round(test2$p.value, 3))), ")", ".")
+      )
+    } else {
+      print("loading...")
+    }
+  })
+  
+```
+
+Column {data-width=400}
+-------------------------------------
+   
+### 시각화
+
+
+```{r one-prop-viz, out.width="100%", eval = TRUE}
+renderPlotly({  
+      if (input$propx_oneprop == "prop_true") {
+        test <- prop.z.test3(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
+      } else {
+        test <- prop.z.test3(x = input$x_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
+      }
+      if (input$alternative == "two.sided") {
+        funcShaded <- function(x) {
+          y <- dnorm(x, mean = 0, sd = 1)
+          y[x < qnorm(input$alpha / 2, mean = 0, sd = 1, lower.tail = FALSE) & x > qnorm(input$alpha / 2, mean = 0, sd = 1) ] <- NA
+          return(y)
+        }
+      } else if (input$alternative == "greater") {
+        funcShaded <- function(x) {
+          y <- dnorm(x, mean = 0, sd = 1)
+          y[x < qnorm(input$alpha, mean = 0, sd = 1, lower.tail = FALSE) ] <- NA
+          return(y)
+        }
+      } else if (input$alternative == "less") {
+        funcShaded <- function(x) {
+          y <- dnorm(x, mean = 0, sd = 1)
+          y[x > qnorm(input$alpha, mean = 0, sd = 1, lower.tail = TRUE) ] <- NA
+          return(y)
+        }
+      }
+      p <- ggplot(data.frame(x = c(qnorm(0.999, mean = 0, sd = 1, lower.tail = FALSE), qnorm(0.999, mean = 0, sd = 1, lower.tail = TRUE))), aes(x = x)) +
+        geom_area(stat="function", fun = dnorm, fill="gray90", args = list(mean = 0, sd = 1)) +
+        geom_area(stat="function", fun = funcShaded, fill = "sky blue", alpha = 0.8) +
+        
+        theme_minimal() +
+        geom_vline(xintercept = test$statistic, color = "steelblue") +
+        geom_text(aes(x = test$statistic, label = paste0("Test statistic = ", round(test$statistic, 3)), y = 0.2), colour = "steelblue", angle = 90, vjust = 1.3, text = element_text(size = 11)) +
+        ggtitle(paste0("Normal distribution N(0,1)")) +
+        theme(plot.title = element_text(face = "bold", hjust = 0.5)) +
+        ylab("Density") +
+        xlab("x")
+      plotly::ggplotly(p)
+  })
+
+```
+
+
+### 데이터
+
+
+```{r one-proportion-data}
+
+renderTable({
+
+prop_dat <- rbinom(input$n_oneprop, 1, input$p_oneprop)
+
+tibble(변수1 = prop_dat) %>%
+  xtable::xtable(align="cc")
+
+})
+```
