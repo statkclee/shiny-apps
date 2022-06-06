@@ -2,6 +2,7 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Inconsolata'); */
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic');
 /* @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR'); */
+@import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300');
 
 .navbar-logo.pull-left {
   padding-top:8px;
@@ -54,7 +55,7 @@ h1 {
 }
 
 h2, h3 { 
-  font-family: "Noto Sans CJK KR", sans-serif; 
+  font-family: "Sunflower", sans-serif; 
   font-size: 20px; 
 }
 
