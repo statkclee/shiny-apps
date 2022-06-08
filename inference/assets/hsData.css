@@ -1,10 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Noto+Sans+CJK+KR);
-/* @import url('https://fonts.googleapis.com/css2?family=Inconsolata'); */
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic');
-/* @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR'); */
-@import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300');
-@import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300&family=Jua');
-@import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300&family=Jua&family=Nanum+Gothic:wght@700&family=Noto+Sans+KR&family=Noto+Serif+KR&family=Sunflower:wght@300;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dongle:wght@300&family=Jua&family=Nanum+Gothic:wght@700&family=Nanum+Myeongjo&family=Noto+Sans+KR&family=Noto+Serif+KR&family=Sunflower:wght@700&display=swap');
 
 .navbar-logo.pull-left {
   padding-top:8px;
@@ -59,6 +53,7 @@ h1 {
 h2, h3 { 
   font-family: "Sunflower", sans-serif; 
   font-size: 20px; 
+  font-weight: 700;
 }
 
 tt, code, pre { 
@@ -67,7 +62,7 @@ tt, code, pre {
 }
 
 body { 
-  font-family: "Noto Serif KR", serif; 
+  font-family: 'Nanum Myeongjo', serif
   font-size: 15px; 
 }
 

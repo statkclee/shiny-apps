@@ -1,5 +1,5 @@
 
-1-표본 t-검정
+[평균] 1-표본 t-검정
 =======================================================================
 
 
@@ -22,13 +22,13 @@ tags$b("가설검정")
 tags$p("1. 귀무가설")
 tags$p("\\( H_0 : \\mu = \\)")
 
-numericInput("h0",
+numericInput("onemean_h0",
              label = NULL,
              value = 3, step = 0.1, width="100px")
 
 tags$p("2. 검정방향")
 radioButtons(
-  inputId = "alternative",
+  inputId = "onemean_alternative",
   label = "대립가설",
   inline = TRUE,
   choices = c(
@@ -47,7 +47,7 @@ conditionalPanel(
 )
 
 tags$p("4. 유의수준")
-sliderInput("alpha",
+sliderInput("onemean_alpha",
             "유의수준 \\(\\alpha = \\)",
             min = 0.01,
             max = 0.20,
@@ -81,8 +81,8 @@ renderUI({
     "Invalid input or not enough observations"
   } else if ( input$popsd_onemean == FALSE) {
     
-    test_confint <- t.test(x = dat, mu = input$h0, alternative = "two.sided", conf.level = 1 - input$alpha)
-    test <- t.test(x = dat, mu = input$h0, alternative = input$alternative, conf.level = 1 - input$alpha)
+    test_confint <- t.test(x = dat, mu = input$onemean_h0, alternative = "two.sided", conf.level = 1 - input$onemean_alpha)
+    test <- t.test(x = dat, mu = input$onemean_h0, alternative = input$onemean_alternative, conf.level = 1 - input$onemean_alpha)
     
     withMathJax(
       tags$h2("가. 표본 데이터"),
@@ -99,14 +99,14 @@ renderUI({
       tags$h2("나. 신뢰구간(양측)"),
       br(),
       paste0(
-        (1 - input$alpha) * 100, 
+        (1 - input$onemean_alpha) * 100, 
         "% 신뢰구간: \\(\\mu = \\bar{x} \\pm t_{\\alpha/2, n - 1} \\dfrac{s}{\\sqrt{n}} \\) "),
       br(),
       paste0(
         " = ",
         round(test_confint$estimate, 3), 
         " \\( \\pm \\) ", "\\( ( \\)", 
-        round(qt(input$alpha / 2, df = test_confint$parameter, lower.tail = FALSE), 3), 
+        round(qt(input$onemean_alpha / 2, df = test_confint$parameter, lower.tail = FALSE), 3), 
         " * ", 
         round(test_confint$stderr * sqrt(length(dat)), 3), " / ", round(sqrt(length(dat)), 3), 
         "\\( ) \\) ", "\\(  \\) \n"),
@@ -120,8 +120,8 @@ renderUI({
       tags$h2("다. 가설검정"),
       br(),
       paste0("1. \\(H_0 : \\mu = \\) ", test$null.value, " vs. \\(H_1 : \\mu \\) ", 
-             ifelse(input$alternative == "two.sided", "\\( \\neq \\) ", 
-             ifelse(input$alternative == "greater", "\\( > \\) ", "\\( < \\) ")), test$null.value),
+             ifelse(input$onemean_alternative == "two.sided", "\\( \\neq \\) ", 
+             ifelse(input$onemean_alternative == "greater", "\\( > \\) ", "\\( < \\) ")), test$null.value),
       br(),
       paste0(
         "2. 검정 통계량 : \\(t_{관측점} = \\dfrac{\\bar{x} - \\mu_0}{s / \\sqrt{n}} = \\) ",
@@ -133,29 +133,29 @@ renderUI({
       br(),
       paste0(
         "3. 임계값 :", 
-        ifelse(input$alternative == "two.sided", " \\( \\pm t_{\\alpha/2, n - 1} = \\pm t(\\)", 
-        ifelse(input$alternative == "greater", " \\( t_{\\alpha, n - 1} = t(\\)", " \\( -t_{\\alpha, n - 1} = -t(\\)")),
-        ifelse(input$alternative == "two.sided", input$alpha / 2, input$alpha), ", ", test$parameter, "\\()\\)", " \\( = \\) ",
-        ifelse(input$alternative == "two.sided", "\\( \\pm \\)", 
-               ifelse(input$alternative == "greater", "", " -")),
-        ifelse(input$alternative == "two.sided", round(qt(input$alpha / 2, df = test$parameter, lower.tail = FALSE), 3), 
-               round(qt(input$alpha, df = test$parameter, lower.tail = FALSE), 3))
+        ifelse(input$onemean_alternative == "two.sided", " \\( \\pm t_{\\alpha/2, n - 1} = \\pm t(\\)", 
+        ifelse(input$onemean_alternative == "greater", " \\( t_{\\alpha, n - 1} = t(\\)", " \\( -t_{\\alpha, n - 1} = -t(\\)")),
+        ifelse(input$onemean_alternative == "two.sided", input$onemean_alpha / 2, input$onemean_alpha), ", ", test$parameter, "\\()\\)", " \\( = \\) ",
+        ifelse(input$onemean_alternative == "two.sided", "\\( \\pm \\)", 
+               ifelse(input$onemean_alternative == "greater", "", " -")),
+        ifelse(input$onemean_alternative == "two.sided", round(qt(input$onemean_alpha / 2, df = test$parameter, lower.tail = FALSE), 3), 
+               round(qt(input$onemean_alpha, df = test$parameter, lower.tail = FALSE), 3))
       ),
       br(),
       
-      paste0("4. 결론 : ", ifelse(test$p.value < input$alpha, "\\(H_0\\) 기각함", "\\(H_0\\) 기각 못함")),
+      paste0("4. 결론 : ", ifelse(test$p.value < input$onemean_alpha, "\\(H_0\\) 기각함", "\\(H_0\\) 기각 못함")),
       br(),
       br(),
       
       tags$h2("라. 해석"),
       br(),
-      glue::glue("유의수준 {input$alpha * 100} % 에서, 참 평균이 {test$null.value} 이라는 귀무가설을 ",
-                 "{ifelse(test$p.value < input$alpha, '기각한다.', '기각하지 못한다.')}",
+      glue::glue("유의수준 {input$onemean_alpha * 100} % 에서, 참 평균이 {test$null.value} 이라는 귀무가설을 ",
+                 "{ifelse(test$p.value < input$onemean_alpha, '기각한다.', '기각하지 못한다.')}",
                  "\\((p\\)-값 = ", "{ifelse(test$p.value < 0.001, '< 0.001', round(test$p.value, 3))} )")
     )
   } else if ( input$popsd_onemean == TRUE) {
     
-    test <- t.test2(x = dat, V = input$sigma2_onemean, m0 = input$h0, alpha = input$alpha, alternative = input$alternative)
+    test <- t.test2(x = dat, V = input$sigma2_onemean, m0 = input$onemean_h0, alpha = input$onemean_alpha, alternative = input$onemean_alternative)
     
     withMathJax(
       
@@ -178,14 +178,14 @@ renderUI({
       tags$h2("신뢰구간(양측)"),
       br(),
       paste0(
-        (1 - input$alpha) * 100, 
+        (1 - input$onemean_alpha) * 100, 
         "% 신뢰구간: \\(\\mu = \\bar{x} \\pm z_{\\alpha/2} \\dfrac{\\sigma}{\\sqrt{n}} \\) "),
       br(),
       paste0(
         " = ",        
         round(test$mean, 3), 
         "  \\( \\pm \\)", " \\( ( \\)", 
-        round(qnorm(input$alpha / 2, lower.tail = FALSE), 3), 
+        round(qnorm(input$onemean_alpha / 2, lower.tail = FALSE), 3), 
         " * ", 
         round(test$sigma, 3), " / ", round(sqrt(length(dat)), 3), "\\( ) \\) ", "\\( \\)"),
       br(),
@@ -199,24 +199,24 @@ renderUI({
       
       tags$h2("가설검정"),
       br(),
-      paste0("1. \\(H_0 : \\mu = \\) ", input$h0, " vs. \\(H_1 : \\mu \\) ", ifelse(input$alternative == "two.sided", "\\( \\neq \\) ", ifelse(input$alternative == "greater", "\\( > \\) ", "\\( < \\) ")), input$h0),
+      paste0("1. \\(H_0 : \\mu = \\) ", input$onemean_h0, " vs. \\(H_1 : \\mu \\) ", ifelse(input$onemean_alternative == "two.sided", "\\( \\neq \\) ", ifelse(input$onemean_alternative == "greater", "\\( > \\) ", "\\( < \\) ")), input$onemean_h0),
       br(),
       paste0(
         "2. 검정통계량 : \\(z_{obs} = \\dfrac{\\bar{x} - \\mu_0}{\\sigma / \\sqrt{n}} = \\) ",
-        "(", round(test$mean, 3), ifelse(input$h0 >= 0, paste0(" - ", input$h0), paste0(" + ", abs(input$h0))), ") / ", round(test$sigma / sqrt(length(dat)), 3), " \\( = \\) ",
+        "(", round(test$mean, 3), ifelse(input$onemean_h0 >= 0, paste0(" - ", input$onemean_h0), paste0(" + ", abs(input$onemean_h0))), ") / ", round(test$sigma / sqrt(length(dat)), 3), " \\( = \\) ",
         round(test$statistic, 3)
       ),
       br(),
       
       paste0(
-          "3. 임계값 :", ifelse(input$alternative == "two.sided", " \\( \\pm z_{\\alpha/2} = \\pm z(\\)", ifelse(input$alternative == "greater", " \\( z_{\\alpha} = z(\\)", " \\( -z_{\\alpha} = -z(\\)")),
-          ifelse(input$alternative == "two.sided", input$alpha / 2, input$alpha), "\\()\\)", " \\( = \\) ",
-          ifelse(input$alternative == "two.sided", "\\( \\pm \\)", ifelse(input$alternative == "greater", "", " -")),
-          ifelse(input$alternative == "two.sided", round(qnorm(input$alpha / 2, lower.tail = FALSE), 3), round(qnorm(input$alpha, lower.tail = FALSE), 3))
+          "3. 임계값 :", ifelse(input$onemean_alternative == "two.sided", " \\( \\pm z_{\\alpha/2} = \\pm z(\\)", ifelse(input$onemean_alternative == "greater", " \\( z_{\\alpha} = z(\\)", " \\( -z_{\\alpha} = -z(\\)")),
+          ifelse(input$onemean_alternative == "two.sided", input$onemean_alpha / 2, input$onemean_alpha), "\\()\\)", " \\( = \\) ",
+          ifelse(input$onemean_alternative == "two.sided", "\\( \\pm \\)", ifelse(input$onemean_alternative == "greater", "", " -")),
+          ifelse(input$onemean_alternative == "two.sided", round(qnorm(input$onemean_alpha / 2, lower.tail = FALSE), 3), round(qnorm(input$onemean_alpha, lower.tail = FALSE), 3))
         ),
       br(),
       
-      paste0("4. 결론 : ", ifelse(test$p.value < input$alpha, "\\(H_0\\) 기각함", "\\(H_0\\) 기각 못함")),
+      paste0("4. 결론 : ", ifelse(test$p.value < input$onemean_alpha, "\\(H_0\\) 기각함", "\\(H_0\\) 기각 못함")),
       br(),
       br(),
       
@@ -224,8 +224,8 @@ renderUI({
       
       tags$h2("해석"),
 
-      paste0("유의수준 ", input$alpha * 100, "% 에서, ", 
-             "참 평균이 ", input$h0, " 이라는 귀무가설을 ", ifelse(test$p.value < input$alpha, "기각한다", "기각하지 못한다"),
+      paste0("유의수준 ", input$onemean_alpha * 100, "% 에서, ", 
+             "참 평균이 ", input$onemean_h0, " 이라는 귀무가설을 ", ifelse(test$p.value < input$onemean_alpha, "기각한다", "기각하지 못한다"),
              " \\((p\\)-값 ",
              paste0("\\(=\\) ", round(test$p.value, 3)), ")", ".")
             
@@ -260,23 +260,23 @@ plotly::ggplotly(test_g)
 renderPlotly({  
     if ( input$popsd_onemean == FALSE) {
       dat <- extract(input$sample_onemean)
-      test <- t.test(x = dat, mu = input$h0, alternative = input$alternative, conf.level = 1 - input$alpha)
-      if (input$alternative == "two.sided") {
+      test <- t.test(x = dat, mu = input$onemean_h0, alternative = input$onemean_alternative, conf.level = 1 - input$onemean_alpha)
+      if (input$onemean_alternative == "two.sided") {
         funcShaded <- function(x) {
           y <- dt(x, df = test$parameter)
-          y[x < qt(input$alpha / 2, df = test$parameter, lower.tail = FALSE) & x > qt(input$alpha / 2, df = test$parameter) ] <- NA
+          y[x < qt(input$onemean_alpha / 2, df = test$parameter, lower.tail = FALSE) & x > qt(input$onemean_alpha / 2, df = test$parameter) ] <- NA
           return(y)
         }
-      } else if (input$alternative == "greater") {
+      } else if (input$onemean_alternative == "greater") {
         funcShaded <- function(x) {
           y <- dt(x, df = test$parameter)
-          y[x < qt(input$alpha, df = test$parameter, lower.tail = FALSE) ] <- NA
+          y[x < qt(input$onemean_alpha, df = test$parameter, lower.tail = FALSE) ] <- NA
           return(y)
         }
-      } else if (input$alternative == "less") {
+      } else if (input$onemean_alternative == "less") {
         funcShaded <- function(x) {
           y <- dt(x, df = test$parameter)
-          y[x > qt(input$alpha, df = test$parameter, lower.tail = TRUE) ] <- NA
+          y[x > qt(input$onemean_alpha, df = test$parameter, lower.tail = TRUE) ] <- NA
           return(y)
         }
       }
@@ -295,23 +295,23 @@ renderPlotly({
       # p
     } else if ( input$popsd_onemean == TRUE) {
       dat <- extract(input$sample_onemean)
-      test <- t.test2(x = dat, V = input$sigma2_onemean, m0 = input$h0, alpha = input$alpha, alternative = input$alternative)
-      if (input$alternative == "two.sided") {
+      test <- t.test2(x = dat, V = input$sigma2_onemean, m0 = input$onemean_h0, alpha = input$onemean_alpha, alternative = input$onemean_alternative)
+      if (input$onemean_alternative == "two.sided") {
         funcShaded <- function(x) {
           y <- dnorm(x, mean = 0, sd = 1)
-          y[x < qnorm(input$alpha / 2, mean = 0, sd = 1, lower.tail = FALSE) & x > qnorm(input$alpha / 2, mean = 0, sd = 1) ] <- NA
+          y[x < qnorm(input$onemean_alpha / 2, mean = 0, sd = 1, lower.tail = FALSE) & x > qnorm(input$onemean_alpha / 2, mean = 0, sd = 1) ] <- NA
           return(y)
         }
-      } else if (input$alternative == "greater") {
+      } else if (input$onemean_alternative == "greater") {
         funcShaded <- function(x) {
           y <- dnorm(x, mean = 0, sd = 1)
-          y[x < qnorm(input$alpha, mean = 0, sd = 1, lower.tail = FALSE) ] <- NA
+          y[x < qnorm(input$onemean_alpha, mean = 0, sd = 1, lower.tail = FALSE) ] <- NA
           return(y)
         }
-      } else if (input$alternative == "less") {
+      } else if (input$onemean_alternative == "less") {
         funcShaded <- function(x) {
           y <- dnorm(x, mean = 0, sd = 1)
-          y[x > qnorm(input$alpha, mean = 0, sd = 1, lower.tail = TRUE) ] <- NA
+          y[x > qnorm(input$onemean_alpha, mean = 0, sd = 1, lower.tail = TRUE) ] <- NA
           return(y)
         }
       }
@@ -377,3 +377,5 @@ dat %>% as.data.frame() %>%
   
 })
 ```
+
+

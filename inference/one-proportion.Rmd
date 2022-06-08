@@ -1,6 +1,6 @@
 
 
-1-비율 z-검정
+[비율] 1-비율 z-검정
 =======================================================================
 
 
@@ -11,18 +11,19 @@ Sidebar Inputs {.sidebar}
 
 tags$br()
 tags$b("데이터")
+tags$br()
 
 tags$b("표본 크기")
 numericInput("n_oneprop", "\\(n = \\)",
-             value = 30, min = 0, step = 1
+             value = 30, min = 0, step = 1, width="100px"
 )
 
 radioButtons(
   inputId = "propx_oneprop",
   label = NULL,
   choices = c(
-    "Proportion of success \\(\\hat{p}\\)" = "prop_true",
-    "Number of successes \\(x\\)" = "prop_false"
+    "성공 비율 \\(\\hat{p}\\)" = "prop_true",
+    "성공 횟수 \\(x\\)" = "prop_false"
   )
 )
 
@@ -30,14 +31,14 @@ conditionalPanel(
   condition = "input.propx_oneprop == 'prop_true'",
   tags$b("성공 비율"),
   numericInput("p_oneprop", "\\(\\hat{p} = \\)",
-               value = 0.2, min = 0, max = 1, step = 0.01
+               value = 0.2, min = 0, max = 1, step = 0.01, width="100px"
   )
 )
 conditionalPanel(
   condition = "input.propx_oneprop == 'prop_false'",
   tags$b("성공 횟수"),
   numericInput("x_oneprop", "\\(x = \\)",
-               value = 10, min = 0, step = 1
+               value = 10, min = 0, step = 1, width="100px"
   )
 )
 
@@ -46,7 +47,7 @@ tags$b("가설검정")
 tags$p("1. 귀무가설")
 tags$p("\\( H_0 : p = \\)")
 
-numericInput("h0",
+numericInput("oneprop_h0",
              label = NULL,
              value = 0.1, step = 0.1, width="100px")
 
@@ -64,7 +65,7 @@ radioButtons(
 
 
 tags$p("4. 유의수준")
-sliderInput("alpha",
+sliderInput("oneprop_alpha",
             "유의수준 \\(\\alpha = \\)",
             min = 0.01,
             max = 0.20,
@@ -94,11 +95,14 @@ Column {data-width=400}
 
 renderUI({
     if ( input$propx_oneprop == "prop_true" ) {
-      test <- prop.z.test(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
-      test2 <- prop.z.test3(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
-      test_confint <- prop.z.test(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = "two.sided")
+      test <- prop.z.test(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, 
+                          p0 = input$oneprop_h0, conf.level = 1 - input$oneprop_alpha, alternative = input$alternative)
+      test2 <- prop.z.test3(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, 
+                            p0 = input$oneprop_h0, conf.level = 1 - input$oneprop_alpha, alternative = input$alternative)
+      test_confint <- prop.z.test(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, 
+                                  p0 = input$oneprop_h0, conf.level = 1 - input$oneprop_alpha, alternative = "two.sided")
       withMathJax(
-        tags$b("Data"),
+        tags$h2("데이터"),
         br(),
         paste0("\\(n =\\) ", round(test$n, 3)),
         br(),
@@ -106,47 +110,50 @@ renderUI({
         br(),
         paste0("\\(\\hat{q} = 1 - \\hat{p} =\\) ", round(1 - test$estimate, 3)),
         br(),
-        helpText(paste0("\\( n\\hat{p} = \\) ", round(test$n * test$estimate, 3), " and \\( n(1-\\hat{p}) = \\) ", round(test$n * (1 - test$estimate), 3))),
-        helpText(paste0("Assumptions \\( n\\hat{p} \\geq 5\\) and \\( n(1-\\hat{p}) \\geq 5\\)", ifelse(test$n * test$estimate >= 5 & test$n * (1 - test$estimate) >= 5, " are met.", " are not met."))),
+        helpText(paste0("\\( n\\hat{p} = \\) ", round(test$n * test$estimate, 3), " 와 \\( n(1-\\hat{p}) = \\) ", round(test$n * (1 - test$estimate), 3))),
+        
+        helpText(paste0(" \\( n\\hat{p} \\geq 5\\) 와 \\( n(1-\\hat{p}) \\geq 5\\)", ifelse(test$n * test$estimate >= 5 & test$n * (1 - test$estimate) >= 5, " 가정이 충족.", " 가정이 충족되지 않음."))),
         br(),
-        tags$b("Confidence interval"),
-        tags$em("(two-sided)"),
+        tags$h2("신뢰구간 - 양측"),
         br(),
         paste0(
-          (1 - input$alpha) * 100, "% CI for \\(p = \\hat{p} \\pm z_{\\alpha/2} \\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}} = \\) ",
-          round(test_confint$estimate, 3), "  \\( \\pm \\) ", "\\( ( \\)", round(qnorm(input$alpha / 2, lower.tail = FALSE), 3), " * ", round(test_confint$stderr, 3), "\\( ) \\) ", "\\( = \\) ",
+          (1 - input$oneprop_alpha) * 100, "% 신뢰구간: \\(p = \\hat{p} \\pm z_{\\alpha/2} \\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}} = \\) ",
+          round(test_confint$estimate, 3), "  \\( \\pm \\) ", "\\( ( \\)", round(qnorm(input$oneprop_alpha / 2, lower.tail = FALSE), 3), " * ", round(test_confint$stderr, 3), "\\( ) \\) ", "\\( = \\) ",
           "[", round(test_confint$conf.int[1], 3), "; ", round(test_confint$conf.int[2], 3), "]"
         ),
         br(),
         br(),
-        tags$b("Hypothesis test"),
+        tags$h2("가설검정"),
         br(),
         paste0("1. \\(H_0 : p = \\) ", test$null.value, " and \\(H_1 : p \\) ", ifelse(input$alternative == "two.sided", "\\( \\neq \\) ", ifelse(input$alternative == "greater", "\\( > \\) ", "\\( < \\) ")), test$null.value),
         br(),
         paste0(
-          "2. Test statistic : \\(z_{obs} = \\dfrac{\\hat{p} - p_0}{\\sqrt{\\dfrac{p_0(1-p_0)}{n}}} = \\) ",
+          "2. 검정통계량 : \\(z_{obs} = \\dfrac{\\hat{p} - p_0}{\\sqrt{\\dfrac{p_0(1-p_0)}{n}}} = \\) ",
           "(", round(test2$estimate, 3), ifelse(test2$null.value >= 0, paste0(" - ", test2$null.value), paste0(" + ", abs(test2$null.value))), ") / ", round(test2$stderr, 3), " \\( = \\) ",
           ifelse(test2$null.value >= 0 & test2$null.value <= 1, round(test2$statistic, 3), "Error: \\( p_0 \\) must be \\( 0 \\leq p_0 \\leq 1\\)")
         ),
         br(),
         paste0(
-          "3. Critical value :", ifelse(input$alternative == "two.sided", " \\( \\pm z_{\\alpha/2} = \\pm z(\\)", ifelse(input$alternative == "greater", " \\( z_{\\alpha} = z(\\)", " \\( -z_{\\alpha} = -z(\\)")),
-          ifelse(input$alternative == "two.sided", input$alpha / 2, input$alpha), "\\()\\)", " \\( = \\) ",
+          "3. 임계값 :", ifelse(input$alternative == "two.sided", " \\( \\pm z_{\\alpha/2} = \\pm z(\\)", ifelse(input$alternative == "greater", " \\( z_{\\alpha} = z(\\)", " \\( -z_{\\alpha} = -z(\\)")),
+          ifelse(input$alternative == "two.sided", input$oneprop_alpha / 2, input$oneprop_alpha), "\\()\\)", " \\( = \\) ",
           ifelse(input$alternative == "two.sided", "\\( \\pm \\)", ifelse(input$alternative == "greater", "", " -")),
-          ifelse(input$alternative == "two.sided", round(qnorm(input$alpha / 2, lower.tail = FALSE), 3), round(qnorm(input$alpha, lower.tail = FALSE), 3))
+          ifelse(input$alternative == "two.sided", round(qnorm(input$oneprop_alpha / 2, lower.tail = FALSE), 3), round(qnorm(input$oneprop_alpha, lower.tail = FALSE), 3))
         ),
         br(),
-        paste0("4. Conclusion : ", ifelse(test2$p.value < input$alpha, "Reject \\(H_0\\)", "Do not reject \\(H_0\\)")),
+        paste0("4. 결론 : ", ifelse(test2$p.value < input$oneprop_alpha, "\\(H_0\\) 기각.", "\\(H_0\\) 기각 못함.")),
         br(),
         br(),
-        tags$b("Interpretation"),
+        tags$b("해석"),
         br(),
-        paste0("At the ", input$alpha * 100, "% significance level, ", ifelse(test2$p.value < input$alpha, "we reject the null hypothesis that the true proportion is ", "we do not reject the null hypothesis that the true proportion is "), test2$null.value, " \\((p\\)-value ", ifelse(test2$p.value < 0.001, "< 0.001", paste0("\\(=\\) ", round(test2$p.value, 3))), ")", ".")
+        paste0( input$oneprop_alpha * 100, "% 유의수준에서, ", 
+        "참 분산 비율이 ", test2$null.value, " 이라는 귀무가설을 ", 
+        ifelse(test2$p.value < input$oneprop_alpha, "기각한다", "기각하지 않는다"), 
+        " \\((p\\)-값 ", ifelse(test2$p.value < 0.001, "< 0.001", paste0("\\(=\\) ", round(test2$p.value, 3))), ")", ".")
       )
     } else if ( input$propx_oneprop == "prop_false") {
-      test <- prop.z.test(x = input$x_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
-      test2 <- prop.z.test3(x = input$x_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
-      test_confint <- prop.z.test(x = input$x_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = "two.sided")
+      test <- prop.z.test(x = input$x_oneprop, n = input$n_oneprop, p0 = input$oneprop_h0, conf.level = 1 - input$oneprop_alpha, alternative = input$alternative)
+      test2 <- prop.z.test3(x = input$x_oneprop, n = input$n_oneprop, p0 = input$oneprop_h0, conf.level = 1 - input$oneprop_alpha, alternative = input$alternative)
+      test_confint <- prop.z.test(x = input$x_oneprop, n = input$n_oneprop, p0 = input$oneprop_h0, conf.level = 1 - input$oneprop_alpha, alternative = "two.sided")
       withMathJax(
         tags$b("Data"),
         br(),
@@ -157,45 +164,45 @@ renderUI({
         paste0("\\(\\hat{q} = 1 - \\hat{p} = \\) ", round(1 - test$estimate, 3)),
         br(),
         helpText(paste0("\\( n\\hat{p} = \\) ", round(test$n * test$estimate, 3), " and \\( n(1-\\hat{p}) = \\) ", round(test$n * (1 - test$estimate), 3))),
-        helpText(paste0("Assumptions \\( n\\hat{p} \\geq 5\\) and \\( n(1-\\hat{p}) \\geq 5\\)", ifelse(test$n * test$estimate >= 5 & test$n * (1 - test$estimate) >= 5, " are met.", " are not met."))),
+        helpText(paste0("\\( n\\hat{p} \\geq 5\\) 와 \\( n(1-\\hat{p}) \\geq 5\\) 가정이 ", ifelse(test$n * test$estimate >= 5 & test$n * (1 - test$estimate) >= 5, " 충족됨.", " 충족되지 않음."))),
         br(),
-        tags$b("Confidence interval"),
-        tags$em("(two-sided)"),
+        tags$h2("신뢰구간 - 양측"),
         br(),
         paste0(
-          (1 - input$alpha) * 100, "% CI for \\(p = \\hat{p} \\pm z_{\\alpha/2} \\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}} = \\) ",
-          round(test_confint$estimate, 3), "  \\( \\pm \\) ", "\\( ( \\)", round(qnorm(input$alpha / 2, lower.tail = FALSE), 3), " * ", round(test_confint$stderr, 3), "\\( ) \\) ", "\\( = \\) ",
+          (1 - input$oneprop_alpha) * 100, "% CI for \\(p = \\hat{p} \\pm z_{\\alpha/2} \\sqrt{\\dfrac{\\hat{p}(1-\\hat{p})}{n}} = \\) ",
+          round(test_confint$estimate, 3), "  \\( \\pm \\) ", "\\( ( \\)", round(qnorm(input$oneprop_alpha / 2, lower.tail = FALSE), 3), " * ", round(test_confint$stderr, 3), "\\( ) \\) ", "\\( = \\) ",
           "[", round(test_confint$conf.int[1], 3), "; ", round(test_confint$conf.int[2], 3), "]"
         ),
         br(),
         br(),
-        tags$b("Hypothesis test"),
+        tags$h2("가설 검정"),
         br(),
         paste0("1. \\(H_0 : p = \\) ", test$null.value, " and \\(H_1 : p \\) ", ifelse(input$alternative == "two.sided", "\\( \\neq \\) ", ifelse(input$alternative == "greater", "\\( > \\) ", "\\( < \\) ")), test$null.value),
         br(),
         paste0(
-          "2. Test statistic : \\(z_{obs} = \\dfrac{\\hat{p} - p_0}{\\sqrt{\\dfrac{p_0(1-p_0)}{n}}} = \\) ",
+          "2. 검정 통계량 : \\(z_{obs} = \\dfrac{\\hat{p} - p_0}{\\sqrt{\\dfrac{p_0(1-p_0)}{n}}} = \\) ",
           "(", round(test2$estimate, 3), ifelse(test2$null.value >= 0, paste0(" - ", test2$null.value), paste0(" + ", abs(test2$null.value))), ") / ", round(test2$stderr, 3), " \\( = \\) ",
-          ifelse(test2$null.value >= 0 & test2$null.value <= 1, round(test2$statistic, 3), "Error: \\( p_0 \\) must be \\( 0 \\leq p_0 \\leq 1\\)")
+          ifelse(test2$null.value >= 0 & test2$null.value <= 1, round(test2$statistic, 3), "오류: \\( p_0 \\) 값이 \\( 0 \\leq p_0 \\leq 1\\) 여야 됨") 
         ),
         br(),
         paste0(
-          "3. Critical value :", ifelse(input$alternative == "two.sided", " \\( \\pm z_{\\alpha/2} = \\pm z(\\)", ifelse(input$alternative == "greater", " \\( z_{\\alpha} = z(\\)", " \\( -z_{\\alpha} = -z(\\)")),
-          ifelse(input$alternative == "two.sided", input$alpha / 2, input$alpha), "\\()\\)", " \\( = \\) ",
+          "3. 임계값 :", ifelse(input$alternative == "two.sided", " \\( \\pm z_{\\alpha/2} = \\pm z(\\)", ifelse(input$alternative == "greater", " \\( z_{\\alpha} = z(\\)", " \\( -z_{\\alpha} = -z(\\)")),
+          ifelse(input$alternative == "two.sided", input$oneprop_alpha / 2, input$oneprop_alpha), "\\()\\)", " \\( = \\) ",
           ifelse(input$alternative == "two.sided", "\\( \\pm \\)", ifelse(input$alternative == "greater", "", " -")),
-          ifelse(input$alternative == "two.sided", round(qnorm(input$alpha / 2, lower.tail = FALSE), 3), round(qnorm(input$alpha, lower.tail = FALSE), 3))
+          ifelse(input$alternative == "two.sided", round(qnorm(input$oneprop_alpha / 2, lower.tail = FALSE), 3), round(qnorm(input$oneprop_alpha, lower.tail = FALSE), 3))
         ),
         br(),
-        paste0("4. Conclusion : ", ifelse(test2$p.value < input$alpha, "Reject \\(H_0\\)", "Do not reject \\(H_0\\)")),
+        paste0("4. 결론 : ", ifelse(test2$p.value < input$oneprop_alpha, "\\(H_0\\) 기각", "\\(H_0\\) 기각하지 못함")),
         br(),
         br(),
-        tags$b("Interpretation"),
+        tags$h1("해석"),
         br(),
-        paste0("At the ", input$alpha * 100, "% significance level, ", ifelse(test2$p.value < input$alpha, "we reject the null hypothesis that the true proportion is ", "we do not reject the null hypothesis that the true proportion is "), test2$null.value, " \\((p\\)-value ", ifelse(test2$p.value < 0.001, "< 0.001", paste0("\\(=\\) ", round(test2$p.value, 3))), ")", ".")
+        paste0( input$oneprop_alpha * 100, "% 유의수준에서, ", 
+        "참 분산 비율이 ", test2$null.value, " 이라는 귀무가설을 ", 
+        ifelse(test2$p.value < input$oneprop_alpha, "기각한다", "기각하지 않는다"), 
+        " \\((p\\)-값 ", ifelse(test2$p.value < 0.001, "< 0.001", paste0("\\(=\\) ", round(test2$p.value, 3))), ")", ".")
       )
-    } else {
-      print("loading...")
-    }
+    } 
   })
   
 ```
@@ -209,26 +216,26 @@ Column {data-width=400}
 ```{r one-prop-viz, out.width="100%", eval = TRUE}
 renderPlotly({  
       if (input$propx_oneprop == "prop_true") {
-        test <- prop.z.test3(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
+        test <- prop.z.test3(x = input$n_oneprop * input$p_oneprop, n = input$n_oneprop, p0 = input$oneprop_h0, conf.level = 1 - input$oneprop_alpha, alternative = input$alternative)
       } else {
-        test <- prop.z.test3(x = input$x_oneprop, n = input$n_oneprop, p0 = input$h0, conf.level = 1 - input$alpha, alternative = input$alternative)
+        test <- prop.z.test3(x = input$x_oneprop, n = input$n_oneprop, p0 = input$oneprop_h0, conf.level = 1 - input$oneprop_alpha, alternative = input$alternative)
       }
       if (input$alternative == "two.sided") {
         funcShaded <- function(x) {
           y <- dnorm(x, mean = 0, sd = 1)
-          y[x < qnorm(input$alpha / 2, mean = 0, sd = 1, lower.tail = FALSE) & x > qnorm(input$alpha / 2, mean = 0, sd = 1) ] <- NA
+          y[x < qnorm(input$oneprop_alpha / 2, mean = 0, sd = 1, lower.tail = FALSE) & x > qnorm(input$oneprop_alpha / 2, mean = 0, sd = 1) ] <- NA
           return(y)
         }
       } else if (input$alternative == "greater") {
         funcShaded <- function(x) {
           y <- dnorm(x, mean = 0, sd = 1)
-          y[x < qnorm(input$alpha, mean = 0, sd = 1, lower.tail = FALSE) ] <- NA
+          y[x < qnorm(input$oneprop_alpha, mean = 0, sd = 1, lower.tail = FALSE) ] <- NA
           return(y)
         }
       } else if (input$alternative == "less") {
         funcShaded <- function(x) {
           y <- dnorm(x, mean = 0, sd = 1)
-          y[x > qnorm(input$alpha, mean = 0, sd = 1, lower.tail = TRUE) ] <- NA
+          y[x > qnorm(input$oneprop_alpha, mean = 0, sd = 1, lower.tail = TRUE) ] <- NA
           return(y)
         }
       }
@@ -238,10 +245,10 @@ renderPlotly({
         
         theme_minimal() +
         geom_vline(xintercept = test$statistic, color = "steelblue") +
-        geom_text(aes(x = test$statistic, label = paste0("Test statistic = ", round(test$statistic, 3)), y = 0.2), colour = "steelblue", angle = 90, vjust = 1.3, text = element_text(size = 11)) +
-        ggtitle(paste0("Normal distribution N(0,1)")) +
+        geom_text(aes(x = test$statistic, label = paste0("검정통계량 = ", round(test$statistic, 3)), y = 0.2), colour = "steelblue", angle = 90, vjust = 1.3, text = element_text(size = 11)) +
+        ggtitle(paste0("정규분포 N(0,1)")) +
         theme(plot.title = element_text(face = "bold", hjust = 0.5)) +
-        ylab("Density") +
+        ylab("밀도") +
         xlab("x")
       plotly::ggplotly(p)
   })
@@ -263,3 +270,5 @@ tibble(변수1 = prop_dat) %>%
 
 })
 ```
+
+
