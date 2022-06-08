@@ -5,9 +5,9 @@ account: dl-dashboard
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6432796
-bundleId: 5982031
+bundleId: 5988067
 url: https://r2bit.shinyapps.io/inference/
-when: 1654525153.9534
-lastSyncTime: 1654525153.95341
+when: 1654667473.52796
+lastSyncTime: 1654667473.52801
 asMultiple: FALSE
 asStatic: FALSE
