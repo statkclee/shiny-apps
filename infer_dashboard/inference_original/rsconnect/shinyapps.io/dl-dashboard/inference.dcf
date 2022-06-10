@@ -1,0 +1,13 @@
+name: inference
+title: inference
+username:
+account: dl-dashboard
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6432796
+bundleId: 5978474
+url: https://r2bit.shinyapps.io/inference/
+when: 1654403537.22725
+lastSyncTime: 1654403537.22726
+asMultiple: FALSE
+asStatic: FALSE

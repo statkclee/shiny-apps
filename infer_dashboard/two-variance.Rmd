@@ -1,0 +1,243 @@
+
+
+
+[분산] 2-변수 분산 F-검정
+=======================================================================
+
+
+Sidebar Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+```{r two-variance-ui}
+
+tags$br()
+tags$b("데이터")
+
+textInput("sample1_twovar", "표본 1", value = "0.9, -0.8, 0.1, -0.3, 0.2, 0.7, -0.8, 0.1, -0.3, 0.2")
+textInput("sample2_twovar", "표본 2", value = "0.4, -0.3, -0.1, 0.4, 0.1, 0.2, -0.1, -0.1, 0.4, 0.1")
+
+tags$p("※ 콤마로 구분된 숫자 입력. ex) 7.2, 4.7, 5.03, 등")
+
+
+tags$b("가설검정")
+
+tags$p("1. 귀무가설")
+tags$p("\\( H_0 : \\sigma^2_1 = \\sigma^2_2 \\)")
+
+
+tags$p("2. 검정방향")
+radioButtons(
+  inputId = "alternative_twovar",
+  label = "대립가설",
+  inline = FALSE,
+  choices = c(
+    "\\( \\sigma^2_1 \\neq \\sigma^2_2 \\)" = "two.sided",
+    "\\( \\sigma^2_1 > \\sigma^2_2 \\)" = "greater",
+    "\\( \\sigma^2_1 < \\sigma^2_2 \\)" = "less"
+  )
+)
+
+
+tags$p("3. 유의수준")
+sliderInput("twovar_alpha",
+            "유의수준 \\(\\alpha = \\)",
+            min = 0.01,
+            max = 0.20,
+            value = 0.05
+)
+
+tags$br()
+
+tags$b("데이터와 코드 출처")
+tags$br()
+tags$a(href="https://cran.r-project.org/web/packages/distributions3/vignettes/one-sample-t-test.html", "ㄴ 데이터: t-검정, ")
+tags$br()
+tags$a(href="https://cran.r-project.org/web/packages/distributions3/vignettes/one-sample-z-confidence-interval.html", "ㄴ 데이터: z-검정")
+tags$br()
+tags$a(href="https://statsandr.com/blog/a-shiny-app-for-inferential-statistics-by-hand/", "ㄴ 코드")
+
+
+```
+
+Column {data-width=400}
+-------------------------------------
+
+### 가설검정
+
+
+```{r two-variance-statistics}
+
+renderUI({
+    dat1 <- extract(input$sample1_twovar)
+    dat2 <- extract(input$sample2_twovar)
+    if (anyNA(dat1) | length(dat1) < 2 | anyNA(dat2) | length(dat2) < 2) {
+      "Invalid input or not enough observations"
+    } # else if (input$h0 <= 0) {
+    #   withMathJax(
+    #     sprintf("\\( \\sigma^2_1 - \\sigma^2_2 \\) must be > 0")
+    #   )
+    # }
+    else {
+      test_confint <- var.test(x = dat1, y = dat2, ratio = 1, alternative = "two.sided", conf.level = 1 - input$twovar_alpha)
+      test <- var.test(x = dat1, y = dat2, ratio = 1, alternative = input$alternative_twovar, conf.level = 1 - input$twovar_alpha)
+      withMathJax(
+        tags$h2("데이터"),
+        br(),
+        paste(c("\\(표본_1=\\)", paste(dat1, collapse = ", ")), collapse = " "),
+        br(),
+        paste(c("\\(표본_2=\\)", paste(dat2, collapse = ", ")), collapse = " "),
+        br(),
+        paste0("\\(n_1 =\\) ", length(dat1)),
+        br(),
+        paste0("\\(n_2 =\\) ", length(dat2)),
+        br(),
+        paste0("\\(s^2_1 =\\) ", round(var(dat1), 3)),
+        br(),
+        paste0("\\(s^2_2 =\\) ", round(var(dat2), 3)),
+        br(),
+        paste0("\\(s_1 =\\) ", round(sd(dat1), 3)),
+        br(),
+        paste0("\\(s_2 =\\) ", round(sd(dat2), 3)),
+        br(),
+        br(),
+        tags$h2("신뢰구간 - 양측"),
+        br(),
+        paste0(
+          (1 - input$twovar_alpha) * 100, "% CI 신뢰구간: \\( \\dfrac{\\sigma^2_1}{\\sigma^2_2} = \\Bigg[ \\dfrac{s^2_1}{s^2_2}\\dfrac{1}{F_{\\alpha/2, n_1 - 1, n_2-1}} ; \\dfrac{s^2_1}{s^2_2}F_{\\alpha/2, n_1 - 1, n_2-1} \\Bigg] = \\) ",
+          "\\( \\big[ \\)", round(test_confint$estimate, 3), " * (1 / ", round(qf(input$twovar_alpha / 2, df1 = test_confint$parameter[1], df2 = test_confint$parameter[2], lower.tail = FALSE), 3), "); ", 
+          round(test_confint$estimate, 3), " * ", round(qf(input$twovar_alpha / 2, df1 = test_confint$parameter[1], df2 = test_confint$parameter[2], lower.tail = FALSE), 3), "\\( \\big] = \\) ",
+          "[", round(test_confint$conf.int[1], 3), "; ", round(test_confint$conf.int[2], 3), "]"
+        ),
+        br(),
+        br(),
+        tags$h2("가설 검정"),
+        br(),
+        if (test$alternative == "two.sided") {
+          withMathJax(
+            paste0("1. \\(H_0 : \\sigma^2_1 = \\sigma^2_2 \\) vs. \\(H_1 : \\sigma^2_1 \\neq \\sigma^2_2 \\) ")
+          )
+        } else if (test$alternative == "greater") {
+          withMathJax(
+            paste0("1. \\(H_0 : \\sigma^2_1 = \\sigma^2_2 \\) vs. \\(H_1 : \\sigma^2_1 > \\sigma^2_2 \\) ")
+          )
+        } else {
+          withMathJax(
+            paste0("1. \\(H_0 : \\sigma^2_1 = \\sigma^2_2 \\) vs. \\(H_1 : \\sigma^2_1 < \\sigma^2_2 \\) ")
+          )
+        },
+        br(),
+        paste0(
+          "2. 검정 통계량 : \\(F_{obs} = \\dfrac{s^2_1}{s^2_2} = \\) ",
+          "[", round(var(dat1), 3), " / ", round(var(dat2), 3), "]", " \\( = \\) ",
+          round(test$statistic, 3)
+        ),
+        br(),
+        if (test$alternative == "two.sided") {
+          withMathJax(
+            paste0("3. 임계값 : \\( F_{1-\\alpha/2, n_1 - 1, n_2-1} \\) 와 \\( F_{\\alpha/2, n_1 - 1, n_2-1} =\\) "),
+            paste0("\\( \\dfrac{1}{F_{\\alpha/2, n_1 - 1, n_2-1}} \\) 와 \\( F_{\\alpha/2, n_1 - 1, n_2-1} =\\) "),
+            paste0("\\( 1/F \\)(", input$twovar_alpha / 2, ", ", test$parameter[1], ", ", test$parameter[2], ") 와 \\( F \\)(", input$twovar_alpha / 2, ", ", test$parameter[1], ", ", test$parameter[2], ") = "),
+            paste0(round(qf(input$twovar_alpha / 2, df1 = test$parameter[1], df2 = test$parameter[2], lower.tail = TRUE), 3), " 와 ", round(qf(input$twovar_alpha / 2, df1 = test$parameter[1], df2 = test$parameter[2], lower.tail = FALSE), 3))
+          )
+        } else if (test$alternative == "greater") {
+          withMathJax(
+            paste0("3. 임계값 : \\( F_{\\alpha, n_1 - 1, n_2-1} =\\) "),
+            paste0("\\( F \\)(", input$twovar_alpha, ", ", test$parameter[1], ", ", test$parameter[2], ") = "),
+            paste0(round(qf(input$twovar_alpha, df1 = test$parameter[1], df2 = test$parameter[2], lower.tail = FALSE), 3))
+          )
+        } else {
+          withMathJax(
+            paste0("3. 임계값 : \\( F_{1-\\alpha, n_1 - 1, n_2-1} = \\) "),
+            paste0("\\( \\dfrac{1}{F_{\\alpha, n_1 - 1, n_2-1}} = \\) "),
+            paste0("\\( 1/F \\)(", input$twovar_alpha, ", ", test$parameter[1], ", ", test$parameter[2], ") = "),
+            paste0(round(qf(input$twovar_alpha, df1 = test$parameter[1], df2 = test$parameter[2], lower.tail = TRUE), 3))
+          )
+        },
+        br(),
+        paste0("4. 결론 : ", ifelse(test$p.value < input$twovar_alpha, "Reject \\(H_0\\)", "Do not reject \\(H_0\\)")),
+        br(),
+        br(),
+        tags$h2("해석"),
+        br(),
+        paste0( input$twovar_alpha * 100, "% 유의수준에서, ", 
+                "참 분산 비율이 ", test$null.value, " 이라는 귀무가설을 ", 
+                ifelse(test$p.value < input$twovar_alpha, "기각한다", "기각하지 않는다"), 
+                " \\((p\\)-값 ", ifelse(test$p.value < 0.001, "< 0.001", paste0("\\(=\\) ", round(test$p.value, 3))), ")", ".")
+      )
+    }
+  })
+  
+```
+
+Column {data-width=400}
+-------------------------------------
+   
+### 시각화
+
+
+```{r two-variance-viz, out.width="100%", eval = TRUE}
+renderPlotly({  
+dat1 <- extract(input$sample1_twovar)
+      dat2 <- extract(input$sample2_twovar)
+      test <- var.test(x = dat1, y = dat2, ratio = 1, alternative = input$alternative_twovar, conf.level = 1 - input$twovar_alpha)
+      if (test$alternative == "two.sided") {
+        funcShaded <- function(x) {
+          y <- df(x, df1 = test$parameter[1], df2 = test$parameter[2])
+          y[x > qf(1 - input$twovar_alpha / 2, df1 = test$parameter[1], df2 = test$parameter[2], lower.tail = FALSE) & x < qf(1 - input$twovar_alpha / 2, df1 = test$parameter[1], df2 = test$parameter[2], lower.tail = TRUE)] <- NA
+          return(y)
+        }
+      } else if (test$alternative == "greater") {
+        funcShaded <- function(x) {
+          y <- df(x, df1 = test$parameter[1], df2 = test$parameter[2])
+          y[x < qf(input$twovar_alpha, df1 = test$parameter[1], df2 = test$parameter[2], lower.tail = FALSE)] <- NA
+          return(y)
+        }
+      } else if (test$alternative == "less") {
+        funcShaded <- function(x) {
+          y <- df(x, df1 = test$parameter[1], df2 = test$parameter[2])
+          y[x > qf(1 - input$twovar_alpha, df1 = test$parameter[1], df2 = test$parameter[2], lower.tail = FALSE)] <- NA
+          return(y)
+        }
+      }
+      p <- ggplot(data.frame(x = c(0, qf(0.99, df1 = test$parameter[1], df2 = test$parameter[2], lower.tail = TRUE))), aes(x = x)) +
+        geom_area(stat="function", fun = df, fill="gray90", args = list(df1 = test$parameter[1], df2 = test$parameter[2])) +
+        geom_area(stat="function", fun = funcShaded, fill = "sky blue", alpha = 0.8) +
+        
+        theme_minimal() +
+        geom_vline(xintercept = test$statistic, color = "steelblue") +
+        geom_text(aes(x = test$statistic, label = paste0("검정통계량 = ", round(test$statistic, 3)), y = 0.2), colour = "steelblue", angle = 90, vjust = 1.3, text = element_text(size = 11)) +
+        ggtitle(paste0("F 분포 F(", test$parameter[1], ", ", test$parameter[2], ")")) +
+        theme(plot.title = element_text(face = "bold", hjust = 0.5)) +
+        ylab("밀도") +
+        xlab("x")
+      plotly::ggplotly(p)
+  })
+
+
+```
+
+
+### 데이터
+
+
+```{r two-variance-data}
+
+extract <- function(text) {
+  text <- gsub(" ", "", text)
+  split <- strsplit(text, ",", fixed = FALSE)[[1]]
+  as.numeric(split)
+}
+
+
+renderTable({
+  var_dat1 <- extract(input$sample1_twovar)
+  var_dat2 <- extract(input$sample2_twovar)
+
+tibble(변수1 = var_dat1,
+       변수2 = var_dat2   ) %>% 
+  xtable::xtable(align="ccc")
+  
+})
+```
+
+
