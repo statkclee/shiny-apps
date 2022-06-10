@@ -37,7 +37,7 @@ shiny_list <- list(
   tibble(
     title = "실용통계",
     image = "assets/hsData-favicon-180x180.png",
-    text = "실용통계 데이터셋",
+    text = "실용통계 데이터셋 (실행방법: CTRL + 클릭)",
     link = "https://statkclee.github.io/shiny-apps/flexdashboard/hsData.html",
     footer = "2022-06-03"
   ),
@@ -49,12 +49,19 @@ shiny_list <- list(
     footer = "2022-06-04"
   ),
   tibble(
-    title = "추론 (Inference)",
+    title = "추론 (flexdashboard)",
     image = "assets/favicon-inference.png",
-    text = "가설 검정 - 평균과 비율에 대한 추론",
+    text = "가설 검정 - 평균, 비율, 분산에 대한 추론",
     link = "https://r2bit.shinyapps.io/inference/",
     footer = "2022-06-05"
-  )  
+  ),
+  tibble(
+    title = "추론 (Shiny)",
+    image = "assets/favicon-inference.png",
+    text = "가설 검정 - 평균, 비율, 분산에 대한 추론",
+    link = "https://r2bit.shinyapps.io/infer_shiny/",
+    footer = "2022-06-10"
+  )    
 )
 
 shiny_tbl <- shiny_list %>% 
