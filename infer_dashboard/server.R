@@ -52,8 +52,8 @@ server <- function(input, output, session) {
         }
         p <- ggplot(data.frame(x = c(qt(0.999, df = test$parameter, lower.tail = FALSE), 
                                      qt(0.999, df = test$parameter, lower.tail = TRUE))), aes(x = x)) +
-          geom_area(stat="function", fun = dt, fill="gray90", args = list(df = test$parameter)) +
-          geom_area(stat="function", fun = funcShaded, fill = "sky blue", alpha = 0.8) +
+          stat_function(fun = dt, fill="gray90", args = list(df = test$parameter)) +
+          stat_function(fun = funcShaded, geom = "area", fill = "sky blue", alpha = 0.8) +
           theme_minimal() +
           geom_vline(xintercept = test$statistic, color = "steelblue") +
           geom_text(aes(x = test$statistic, label = paste0("검정 통계량 = ", round(test$statistic, 3)), y = 0.2), colour = "steelblue", angle = 90, vjust = 1.3, text = element_text(size = 11)) +
@@ -85,8 +85,8 @@ server <- function(input, output, session) {
           }
         }
         p <- ggplot(data.frame(x = c(qnorm(0.999, mean = 0, sd = 1, lower.tail = FALSE), qnorm(0.999, mean = 0, sd = 1, lower.tail = TRUE))), aes(x = x)) +
-          geom_area(stat="function", fun = dnorm, fill="gray90", args = list(mean = 0, sd = 1)) +
-          geom_area(stat="function", fun = funcShaded, fill = "sky blue", alpha = 0.8) +
+          stat_function(fun = dnorm, fill="gray90", args = list(mean = 0, sd = 1)) +
+          stat_function(fun = funcShaded, geom = "area",fill = "sky blue", alpha = 0.8) +
           theme_minimal() +
           geom_vline(xintercept = test$statistic, color = "steelblue") +
           geom_text(aes(x = test$statistic, label = paste0("검정통계량 = ", round(test$statistic, 3)), y = 0.2), colour = "steelblue", angle = 90, vjust = 1.3, text = element_text(size = 11)) +
@@ -98,6 +98,17 @@ server <- function(input, output, session) {
       } 
     })
 
+
+  
+  output$test_means_one_tbl <- renderTable({
+    dat <- extract(input$sample_onemean) 
+    
+    dat %>% as.data.frame() %>% 
+      set_names("표본") %>% 
+      xtable::xtable(align="cc")
+    
+  })
+  
 }
   
 

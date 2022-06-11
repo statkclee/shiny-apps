@@ -87,7 +87,9 @@ ui <- dashboardPage(
               box(
                 title = "시각화",
                 plotOutput("test_means_one_plot")
-              )
+              ),
+              box(title = "표",
+                  tableOutput("test_means_one_tbl"))
               
       )
     )
