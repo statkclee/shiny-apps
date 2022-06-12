@@ -9,7 +9,8 @@ library(tidyverse)
 library(here)
 
 sido_name_v <-
-  read_rds(glue::glue("{here::here()}/krvote_shinydashboard/www/sido_name_v.rds"))
+  # read_rds(glue::glue("{here::here()}/krvote_shinydashboard/www/sido_name_v.rds"))
+  readRDS(url("https://github.com/statkclee/shiny-apps/blob/main/krvote_shinydashboard/www/sido_name_v.rds?raw=true", "rb"))
 
 # 
 # sido_name_v <- krvote::election_20220309$투표율 %>%
@@ -69,7 +70,7 @@ sido_name_v <-
 #   select(시도명, 구시군명, 민주당, 국민의힘, 그외정당, 계)
 # 
 # sido_party_rate %>%
-#   write_rds(glue::glue("{here::here()}/krvote_shinydashboard/www/sido_party_rate"))
+#   write_rds(glue::glue("{here::here()}/krvote_shinydashboard/www/sido_party_rate.rds"))
 # 
 # # 4. 지도 -----------------------------
 # 
