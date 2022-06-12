@@ -3,11 +3,23 @@ shinyServer(function(input, output, session) {
   
   # 1. Get Simulation Result !!! -----
   ## 1.1. Get Coin Value --------------
-  coin_value <- reactive({
-    input$coin_button
-    coin_value <- isolate(sample(c("앞", "뒤"), size=1, prob = c(1/2, 1/2), replace=TRUE))
+  
+  coin_prob <- reactive({
+    as.numeric(input$coin_prob)
   })
   
+  coin_value <- reactive({
+    input$coin_button
+    coin_value <- isolate(sample(c("앞", "뒤"), size=1, prob = c(coin_prob(), 1 - coin_prob()), replace=TRUE))
+  })
+  
+  ### 추후 수정하여 동전던지기 이력이 보여줘야함....
+  # coin_toss_history <- reactive({
+  #   c(coin_value())
+  # })
+  
+
+    
   ## 1.2. Get Dice Value --------------
   dice_value <- reactive({
     input$dice_button
@@ -38,6 +50,15 @@ shinyServer(function(input, output, session) {
     print(coin_value())
   })
   
+  output$toss_coin_prob_text <- renderText({
+    print(coin_prob())
+  })
+
+  output$toss_coin_history_text <- renderText({
+    # print(coin_reactive_values$df_data)
+  })
+  
+  
   ## 3.2. Display Dice Text Result --------------------
   output$roll_dice_text <- renderText({
     print(dice_value())
@@ -47,10 +68,10 @@ shinyServer(function(input, output, session) {
   ## 3.1. Display Coin Text Result --------------------
   output$coin_image <- renderImage({
     
-    if(coin_value() == "Head") {
-      list(src = "www/coin_head.jpg", width = 200, contentType = "image/jpg", alt = "Coin Head")
+    if(coin_value() == "앞") {
+      list(src = "www/coin_head.jpg", width = 200, contentType = "image/jpg", alt = "동전 앞면")
     } else {
-      list(src = "www/coin_tail.jpg", width = 200, contentType = "image/jpg", alt = "Coin Head")
+      list(src = "www/coin_tail.jpg", width = 200, contentType = "image/jpg", alt = "동전 뒷면")
     }
     
   }, deleteFile = FALSE)  

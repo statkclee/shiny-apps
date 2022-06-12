@@ -11,6 +11,7 @@ sidebar <- dashboardSidebar(
     menuItem("동전 던지기", tabName = "toss_coin_menu", icon = icon(name = "bitcoin", lib = "font-awesome"), 
              badgeColor = "green"), 
     actionButton("coin_button", "던져보자"),
+    sliderInput(inputId = "coin_prob", label = "동전앞면 출현 확률", min =0, max =1, value =0.5, step=0.01),
     menuItem("주사위를 굴려보자!", tabName = "roll_dice_menu", 
              icon = icon(name = "gamepad", lib = "font-awesome", badgeLabel = "new")),
     actionButton("dice_button", "굴려보자")
@@ -26,9 +27,15 @@ body <- dashboardBody(
     tabItem(tabName = "toss_coin",
             box(width = 6, title = "동전 사진", status = "primary", solidHeader = TRUE,
                 imageOutput("coin_image", height = 300)),
-            box(width = 6, title = "동전 앞뒤 결과", status = "primary", solidHeader = TRUE,
+            box(width = 3, title = "동전 앞뒤 결과", status = "primary", solidHeader = TRUE,
                 verbatimTextOutput("toss_coin_text")
-            )
+            ),
+            box(width = 3, title = "동전 앞 확률", status = "primary", solidHeader = TRUE,
+                verbatimTextOutput("toss_coin_prob_text")
+            ),
+            box(width = 6, title = "동전 던지기 이력", status = "primary", solidHeader = TRUE,
+                verbatimTextOutput("toss_coin_history_text")
+            )            
     )
   ),
 
