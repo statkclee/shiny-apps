@@ -1,7 +1,10 @@
+# library(devtools)
+# install_github("ai-carpentry/krvote")
+
 library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)
-library(krvote)
+# library(krvote)
 library(tidyverse)
 library(here)
 
