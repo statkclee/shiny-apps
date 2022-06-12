@@ -68,7 +68,15 @@ shiny_list <- list(
     text = "동전, 주사위 던지기 ...",
     link = "https://r2bit.shinyapps.io/simulation/",
     footer = "2022-06-12"
+  ),
+  tibble(
+    title = "선거",
+    image = "assets/favicon-krvote.png",
+    text = "제20대 대통령선거 투표/득표",
+    link = "https://r2bit.shinyapps.io/krvote_shinydashboard/",
+    footer = "2022-06-13"
   )      
+  
 )
 
 shiny_tbl <- shiny_list %>% 
