@@ -21,7 +21,9 @@ body <- dashboardBody(
   
   conditionalPanel(condition = 'input.type_select == "투표율"',
                    box(title = "투표율",
-                       shiny::tableOutput("sido_casting"))
+                       shiny::tableOutput("sido_casting")),
+                   box(title = "투표율",
+                       shiny::plotOutput("sido_casting_map"))
                    ),
   conditionalPanel(condition = 'input.type_select == "정당별 득표수/율"',
                    box(title = "정당별 득표수",
