@@ -12,22 +12,24 @@ library(showtext)
 font_add_google(name = "Nanum Gothic", regular.wt = 400)
 showtext_auto()
 
-? font_a
-
 sido_name_v <-
   readRDS(url("https://github.com/statkclee/shiny-apps/blob/main/krvote_shinydashboard/www/sido_name_v.rds?raw=true", "rb"))
 
 sido_casting <- 
   readRDS(url("https://github.com/statkclee/shiny-apps/blob/main/krvote_shinydashboard/www/sido_casting.rds?raw=true", "rb"))
-
 sgg_casting_sf <- 
-  readRDS(glue::glue("{here::here()}/krvote_shinydashboard/www/sgg_casting_sf.rds"))
+  readRDS(url("https://github.com/statkclee/shiny-apps/blob/main/krvote_shinydashboard/www/sgg_casting_sf.rds?raw=true", "rb"))
 
 sido_party <-
   readRDS(url("https://github.com/statkclee/shiny-apps/blob/main/krvote_shinydashboard/www/sido_party.rds?raw=true"))
+sgg_party_sf <- 
+  readRDS(glue::glue("{here::here()}/krvote_shinydashboard/www/sgg_party_sf.rds"))
 
 sido_party_rate <- 
   readRDS(url("https://github.com/statkclee/shiny-apps/blob/main/krvote_shinydashboard/www/sido_party_rate.rds?raw=true"))
+
+sgg_party_rate_sf <- 
+  readRDS(glue::glue("{here::here()}/krvote_shinydashboard/www/sgg_party_rate_sf.rds"))
 
 # 
 # sido_name_v <- krvote::election_20220309$투표율 %>%
@@ -91,33 +93,83 @@ sido_party_rate <-
 # 
 # 4. 지도 -----------------------------
 # 
-# 
 # adm_map <- st_read("assets/HangJeongDong_ver20220401.geojson")
 # 
 # sf::sf_use_s2(TRUE)
 # 
-# adm_sgg_map <- adm_map %>% 
+# adm_sgg_map <- adm_map %>%
 #   st_make_valid() %>%
-#   group_by(sidonm, sggnm) %>% 
+#   group_by(sidonm, sggnm) %>%
 #   summarise(geometry = st_union(geometry))
 # 
-# sgg_casting_sf <- adm_sgg_map %>% 
-#   ungroup()  %>% 
+# ## 4.1. 투표율 -----------------------------
+# sgg_casting_sf <- adm_sgg_map %>%
+#   ungroup()  %>%
 #   left_join(sido_casting, by = c("sggnm" = "구시군명",
-#                                  "sidonm" = "시도명")) %>% 
+#                                  "sidonm" = "시도명")) %>%
 #   rename(시도명 = sidonm,
 #          구시군명 = sggnm)
 # 
-# sgg_casting_sf %>% 
+# sgg_casting_sf %>%
 #   write_rds(glue::glue("{here::here()}/krvote_shinydashboard/www/sgg_casting_sf.rds"))
 # 
-# sgg_casting_sf %>% 
-#   filter(시도명 == "서울특별시") %>% 
+# sgg_casting_sf %>%
+#   filter(시도명 == "서울특별시") %>%
 #   ggplot() +
 #     geom_sf(aes(geometry = geometry, fill = 투표율)) +
 #     theme_void() +
 #     scale_fill_viridis_c(option = "plasma", begin = 0.0) +
 #     geom_sf_text(aes(label = glue::glue("{구시군명}\n{scales::percent(투표율, accuracy=0.1)}")),
 #                  size = 3)
+# 
+# 
+# ## 4.2. 득표수 -----------------------------
+# 
+# sgg_party_sf <- adm_sgg_map %>%
+#   ungroup()  %>%
+#   left_join(sido_party, by = c("sggnm" = "구시군명",
+#                                  "sidonm" = "시도명")) %>%
+#   rename(시도명 = sidonm,
+#          구시군명 = sggnm) %>% 
+#   mutate(표차이 = 민주당 - 국민의힘)
+# 
+# sgg_party_sf %>%
+#   write_rds(glue::glue("{here::here()}/krvote_shinydashboard/www/sgg_party_sf.rds"))
+# 
+# sgg_party_sf %>%
+#   filter(시도명 == "서울특별시") %>%
+#   ggplot() +
+#   geom_sf(aes(geometry = geometry, fill = 표차이)) +
+#   theme_void() +
+#   scale_fill_gradient2(low='red', mid = "white", high='blue') +
+#   geom_sf_text(aes(label = glue::glue("{구시군명}\n", 
+#                                       "민주당: {scales::comma(민주당, accuracy=1)}\n",
+#                                       "국민의힘: {scales::comma(국민의힘, accuracy=1)}\n",
+#                                       "그외정당: {scales::comma(그외정당, accuracy=1)}")),
+#                size = 3)
+# 
+## 4.3. 득표율 -----------------------------
 
+sgg_party_rate_sf <- adm_sgg_map %>%
+  ungroup()  %>%
+  left_join(sido_party_rate, by = c("sggnm" = "구시군명",
+                               "sidonm" = "시도명")) %>%
+  rename(시도명 = sidonm,
+            구시군명 = sggnm) %>%
+  mutate(표차이 = 민주당 - 국민의힘)
 
+sgg_party_rate_sf %>%
+  write_rds(glue::glue("{here::here()}/krvote_shinydashboard/www/sgg_party_rate_sf.rds"))
+
+sgg_party_rate_sf %>%
+  filter(시도명 == "서울특별시") %>%
+  ggplot() +
+  geom_sf(aes(geometry = geometry, fill = 표차이)) +
+  theme_void() +
+  scale_fill_gradient2(low='red', mid = "white", high='blue',
+                       labels = scales::percent) +
+  geom_sf_text(aes(label = glue::glue("{구시군명} > ",
+                                      "민주당: {scales::percent(민주당, accuracy=0.1)}\n",
+                                      "국민의힘: {scales::percent(국민의힘, accuracy=0.1)}\n",
+                                      "그외정당: {scales::percent(그외정당, accuracy=0.1)}")),
+               size = 4)
