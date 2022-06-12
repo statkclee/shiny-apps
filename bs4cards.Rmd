@@ -61,7 +61,14 @@ shiny_list <- list(
     text = "가설 검정 - 평균, 비율, 분산에 대한 추론",
     link = "https://r2bit.shinyapps.io/infer_shiny/",
     footer = "2022-06-10"
-  )    
+  ),
+  tibble(
+    title = "모의실험",
+    image = "assets/favicon-simulation.png",
+    text = "동전, 주사위 던지기 ...",
+    link = "https://r2bit.shinyapps.io/simulation/",
+    footer = "2022-06-12"
+  )      
 )
 
 shiny_tbl <- shiny_list %>% 

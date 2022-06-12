@@ -5,7 +5,7 @@ shinyServer(function(input, output, session) {
   ## 1.1. Get Coin Value --------------
   coin_value <- reactive({
     input$coin_button
-    coin_value <- isolate(sample(c("Head", "Tail"), size=1, prob = c(1/2, 1/2), replace=TRUE))
+    coin_value <- isolate(sample(c("앞", "뒤"), size=1, prob = c(1/2, 1/2), replace=TRUE))
   })
   
   ## 1.2. Get Dice Value --------------
