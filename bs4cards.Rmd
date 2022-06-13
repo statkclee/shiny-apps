@@ -49,15 +49,15 @@ shiny_list <- list(
     footer = "2022-06-04"
   ),
   tibble(
-    title = "추론 (flexdashboard)",
+    title = "추론: flexdashboard",
     image = "assets/favicon-inference.png",
     text = "가설 검정 - 평균, 비율, 분산에 대한 추론",
     link = "https://r2bit.shinyapps.io/inference/",
     footer = "2022-06-05"
   ),
   tibble(
-    title = "추론 (Shiny)",
-    image = "assets/favicon-inference.png",
+    title = "추론: Shiny",
+    image = "assets/favicon-shiny-infer.png",
     text = "가설 검정 - 평균, 비율, 분산에 대한 추론",
     link = "https://r2bit.shinyapps.io/infer_shiny/",
     footer = "2022-06-10"
@@ -75,7 +75,7 @@ shiny_list <- list(
     text = "제20대 대통령선거 투표/득표",
     link = "https://r2bit.shinyapps.io/krvote_shinydashboard/",
     footer = "2022-06-13"
-  )      
+  )       
   
 )
 
