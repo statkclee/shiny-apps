@@ -1,6 +1,10 @@
 
-source(glue::glue("{here::here()}/infer_shinydashboard/module_onemeans.R"))
-source(glue::glue("{here::here()}/infer_shinydashboard/_common.R"))
+# source(glue::glue("{here::here()}/infer_shinydashboard/module_onemeans.R"))
+# source(glue::glue("{here::here()}/infer_shinydashboard/_common.R"))
+
+source("module_onemeans.R", encoding = "UTF-8")
+source("_common.R", encoding = "UTF-8")
+
 
 ui <- shinyUI(
   fluidPage(
