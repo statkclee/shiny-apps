@@ -6,6 +6,9 @@ library(kableExtra)
 library(knitr)
 library(EnvStats)
 
+
+
+
 # 1. 입력 데이터 변환---------------
 extract <- function(text) {
   text <- gsub(" ", "", text)

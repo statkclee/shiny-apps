@@ -1,82 +1,55 @@
-library(shiny)
-library(shinydashboard)
-library(shinydashboardPlus)
-library(DT)
 
-# app_ui 
-app_ui <- function(request) {
-  tagList(
-    shinydashboardPlus::dashboardPage(
-      header = shinydashboardPlus::dashboardHeader(title = "module_test",
-                                                       enable_rightsidebar = FALSE),
-      sidebar = shinydashboard::dashboardSidebar(
-        shinydashboard::sidebarMenu(id = "tabs",
-                                    mod_test_sidebar_ui("test_ui_1"))
-      ),
-      #
-      body =  shinydashboard::dashboardBody(shinydashboard::tabItems(
-        mod_test_body_ui("test_ui_1"))
-      ),
-      title = "Testing Shiny modules"
-    )
-  )
-}
-# app_server 
-app_server <- function(input, output, session) {
-  shiny::moduleServer(id = "test_ui_1", module = mod_test_server)
-}
+source("_common.R", encoding = "UTF-8")
 
-##   THE MODULES   #######################################################
-# the sidebar module
-mod_test_sidebar_ui <- function(id) {
-  ns <- NS(id)
-  shinydashboard::menuItem("Module Testing",
-                           tabName = "tab_testing_mod",
-                           icon = icon("th"))
-}
-#---------------------------------
-# the body module b/c wanna use tabs I decided to add one more mod layer 
-mod_test_body_ui <- function(id) {
-  ns <- NS(id)
-  shinydashboard::tabItem(tabName = "tab_testing_mod",
-                          mod_test_modules_ui(id)
-                          
-  )
-}
-# the ('additional') body_ui "content" module
-mod_test_modules_ui <- function(id) {
-  ns <- NS(id)
-  fluidRow(
-    shinydashboard::box(
-      title = "Select Cols",
-      selectInput(ns("select"), "Select columns", names(mtcars), multiple = TRUE)
+source("module_workflow.R", encoding = "UTF-8")
+
+source("module_onemeans.R", encoding = "UTF-8")
+source("module_twomeans.R", encoding = "UTF-8")
+
+source("module_one_proportion.R", encoding = "UTF-8")
+source("module_two_proportion.R", encoding = "UTF-8")
+
+
+ui <- shinyUI(
+
+  navbarPage("NHST 가설검정",
+    # 0. 가설 선택 ---------------------------------             
+    tabPanel("가설 선택",
+              NHST_UI("NHST_image")
+    ),
+    # 1. 평균 가설검정 -----------------------------
+    navbarMenu("평균",
+      tabPanel("1 표본",
+               one_means_UI("means_one") 
+                ),             
+      tabPanel("2 표본",
+               two_means_UI("means_two") 
+      )
+    ),
+    # 2. 비율 가설검정 -----------------------------    
+    navbarMenu("비율",
+       tabPanel("1 표본",
+                one_proportion_UI("prop_one") 
+       ),             
+       tabPanel("2 표본",
+                two_proportion_UI("prop_two") 
+       )
     )
-    , 
-    shinydashboard::box(
-      title = "Data Viewer",
-      width = 10,
-      DT::dataTableOutput(ns('data_table'))
-    )
   )
-}
-#---------------------------------
-#module server
-mod_test_server <- function(input, output, session) {
-  ns <- session$ns
-  output[['data_table']] <- renderDataTable({
-    #output$data_table <- renderDataTable({
-    columns = names(mtcars)
-    if (!is.null(input$select)) {
-      columns = input$select
-    }
-    mtcars[,columns,drop=FALSE]
-  }, filter = 'top')
-}
-####################################################################
-run_app <- function(...) {
-  shiny::shinyApp(
-    ui = app_ui, 
-    server = app_server)
-}
-#---------------------------------
-run_app()
+)
+
+
+server <- shinyServer(function(input, output) {
+  
+  NHST_server("NHST_image")
+  
+  one_means_server("means_one")
+  two_means_server("means_two")
+  
+  one_proportion_server("prop_one")
+  two_proportion_server("prop_two")
+  
+})
+
+
+shinyApp(ui, server)
