@@ -3,6 +3,7 @@
 # source(glue::glue("{here::here()}/infer_shinydashboard/_common.R"))
 
 source("module_onemeans.R", encoding = "UTF-8")
+source("module_workflow.R", encoding = "UTF-8")
 source("_common.R", encoding = "UTF-8")
 
 
@@ -11,13 +12,16 @@ ui <- shinyUI(
   
   titlePanel("가설검정"),
   
-      one_means_UI("means_one")      
+  NHST_UI("NHST_image")
+  # one_means_UI("means_one")
+  
 ))
 
 
 server <- shinyServer(function(input, output) {
   
-  one_means_server("means_one")
+  NHST_server("NHST_image")
+  # one_means_server("means_one")
   
 })
 
