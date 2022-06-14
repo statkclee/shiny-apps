@@ -3,12 +3,14 @@ source("_common.R", encoding = "UTF-8")
 
 source("module_workflow.R", encoding = "UTF-8")
 
-source("module_onemeans.R", encoding = "UTF-8")
-source("module_twomeans.R", encoding = "UTF-8")
+source("module_one_means.R", encoding = "UTF-8")
+source("module_two_means.R", encoding = "UTF-8")
 
 source("module_one_proportion.R", encoding = "UTF-8")
 source("module_two_proportion.R", encoding = "UTF-8")
 
+source("module_one_variance.R", encoding = "UTF-8")
+source("module_two_variance.R", encoding = "UTF-8")
 
 ui <- shinyUI(
 
@@ -34,6 +36,15 @@ ui <- shinyUI(
        tabPanel("2 표본",
                 two_proportion_UI("prop_two") 
        )
+    ),
+    # 3. 분산 가설검정 -----------------------------    
+    navbarMenu("분산",
+               tabPanel("1 표본",
+                        one_variance_UI("var_one") 
+               ),             
+               tabPanel("2 표본",
+                        two_variance_UI("var_two")
+               )
     )
   )
 )
@@ -48,6 +59,9 @@ server <- shinyServer(function(input, output) {
   
   one_proportion_server("prop_one")
   two_proportion_server("prop_two")
+
+  one_variance_server("var_one")
+  two_variance_server("var_two")
   
 })
 
