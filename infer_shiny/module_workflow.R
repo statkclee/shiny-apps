@@ -9,7 +9,7 @@ NHST_UI <- function(id) {
   ns <- NS(id)
   
   # 1. 메인 패널 ------------------------------------
-  mainPanel <- mainPanel(width = 9,
+  mainPanel <- mainPanel(width = 10,
 
     fluidRow(
       uiOutput(outputId = ns("workflow_image"))
@@ -17,7 +17,7 @@ NHST_UI <- function(id) {
   )
   
   # 2. 옆 패널 --------------------------------------
-  sidebarPanel <- sidebarPanel(width = 3,
+  sidebarPanel <- sidebarPanel(width = 2,
 
     tags$br(),
     # tags$h2("NHST"),
