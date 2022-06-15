@@ -39,14 +39,16 @@ one_proportion_UI <- function(id) {
      ),
      
      conditionalPanel(
-       condition = "input.propx_oneprop == 'prop_true'",
+       # condition = "input.propx_oneprop == 'prop_true'",
+       condition = paste0("input['", ns("propx_oneprop"), "'] == 'prop_true'"),              
        tags$b("성공 비율"),
        numericInput( ns("p_oneprop"), "\\(\\hat{p} = \\)",
                     value = 0.2, min = 0, max = 1, step = 0.01, width="100px"
        )
      ),
      conditionalPanel(
-       condition = "input.propx_oneprop == 'prop_false'",
+       # condition = "input.propx_oneprop == 'prop_false'",
+       condition = paste0("input['", ns("propx_oneprop"), "'] == 'prop_false'"),                     
        tags$b("성공 횟수"),
        numericInput( ns("x_oneprop"), "\\(x = \\)",
                     value = 10, min = 0, step = 1, width="100px"

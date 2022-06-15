@@ -1,6 +1,6 @@
 
 library(showtext)
-font_add_google(name = "Nanum Gothic", regular.wt = 400)
+# font_add_google(name = "Nanum Gothic", regular.wt = 400)
 showtext_auto()
 
 
@@ -41,7 +41,8 @@ two_means_UI <- function(id) {
      
      checkboxInput(ns("twomeans_popsd"), "모집단 분산을 알는 경우:", FALSE),
      conditionalPanel(
-       condition = "input.twomeans_popsd == 1",
+       # condition = "input.twomeans_popsd == 1",
+       condition = paste0("input['", ns("twomeans_popsd"), "'] == 1"),              
        numericInput(ns("twomeans_sigma21"), "\\(\\sigma^2_1 = \\)",
                     value = 1, min = 0, step = 1, width = "100px"
        ),

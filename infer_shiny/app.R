@@ -54,6 +54,14 @@ ui <- shinyUI(
                tabPanel("2 표본",
                         two_variance_UI("var_two")
                )
+    ),
+    
+    tags$footer(
+      tags$div(
+        class = "footer_container", 
+        
+        includeHTML(path = "www/footer.html")
+      )
     )
   )
 )

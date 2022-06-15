@@ -42,7 +42,8 @@ two_proportion_UI <- function(id) {
      ),
      
      conditionalPanel(
-       condition = "input.propx_twoprop == 'prop_true'",
+       # condition = "input.propx_twoprop == 'prop_true'",
+       condition = paste0("input['", ns("propx_twoprop"), "'] == 'prop_true'"),              
        tags$b("성공 비율"),
        numericInput( ns("p1_twoprop"), "\\(\\hat{p}_1 = \\)",
                     value = 0.2, min = 0, max = 1, step = 0.01
@@ -52,7 +53,8 @@ two_proportion_UI <- function(id) {
        )
      ),
      conditionalPanel(
-       condition = "input.propx_twoprop == 'prop_false'",
+       # condition = "input.propx_twoprop == 'prop_false'",
+       condition = paste0("input['", ns("propx_twoprop"), "'] == 'prop_false'"),                     
        tags$b("성공 횟수"),
        numericInput( ns("x1_twoprop"), "\\(x_1 = \\)",
                     value = 10, min = 0, step = 1

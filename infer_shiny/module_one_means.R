@@ -1,6 +1,6 @@
 
 library(showtext)
-font_add_google(name = "Nanum Gothic", regular.wt = 400)
+# font_add_google(name = "Nanum Gothic", regular.wt = 400)
 showtext_auto()
 
 
@@ -53,7 +53,8 @@ one_means_UI <- function(id) {
     tags$p("3. 모집단 분산"),
     checkboxInput(ns("popsd_onemean"), "모집단 분산을 알는 경우:", FALSE),
     conditionalPanel(
-      condition = "input.popsd_onemean == 1",
+      # condition = "input.popsd_onemean == 1",
+      condition = paste0("input['", ns("popsd_onemean"), "'] == 1"),       
       numericInput(ns("sigma2_onemean"), "\\(\\sigma^2 = \\)",
                    value = 2, min = 0, step = 0.1, width = "100px")
     ),
