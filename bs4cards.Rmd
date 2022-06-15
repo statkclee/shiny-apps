@@ -63,6 +63,13 @@ shiny_list <- list(
     footer = "2022-06-10"
   ),
   tibble(
+    title = "확률분포",
+    image = "assets/favicon-distribution.png",
+    text = "정규, 이산형, 연속형 분포",
+    link = "https://r2bit.shinyapps.io/dist_shiny/",
+    footer = "2022-06-15"
+  ),  
+  tibble(
     title = "모의실험",
     image = "assets/favicon-simulation.png",
     text = "동전, 주사위 던지기 ...",

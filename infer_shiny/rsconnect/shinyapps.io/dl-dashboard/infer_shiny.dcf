@@ -5,9 +5,9 @@ account: dl-dashboard
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6477064
-bundleId: 6005400
+bundleId: 6006386
 url: https://r2bit.shinyapps.io/infer_shiny/
-when: 1655182475.94033
-lastSyncTime: 1655182475.94037
+when: 1655212181.06816
+lastSyncTime: 1655212181.06817
 asMultiple: FALSE
 asStatic: FALSE
