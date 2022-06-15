@@ -11,6 +11,8 @@ source("module_dist_discrete_beta.R", encoding = "UTF-8")
 source("module_dist_discrete_binomial.R", encoding = "UTF-8")
 ### *. 1.3. 포아송 분포 ----------------------------------
 source("module_dist_discrete_poisson.R", encoding = "UTF-8")
+### *. 1.4. 기하 분포 ----------------------------------
+source("module_dist_discrete_geometry_failure.R", encoding = "UTF-8")
 
 
 ui <- shinyUI(
@@ -32,6 +34,9 @@ ui <- shinyUI(
        ),
       tabPanel("포아송 분포",
          dist_discrete_poisson_UI("dist_discrete_poisson")
+      ),
+      tabPanel("기하분포-실패횟수",
+         dist_discrete_geometry_failure_UI("dist_discrete_geometry_failure")
       )
    )
   )
@@ -48,6 +53,7 @@ server <- shinyServer(function(input, output) {
   dist_discrete_beta_server("dist_discrete_beta")
   dist_discrete_binomial_server("dist_discrete_binomial")
   dist_discrete_poisson_server("dist_discrete_poisson")
+  dist_discrete_geometry_failure_server("dist_discrete_geometry_failure")
 
 })
 
