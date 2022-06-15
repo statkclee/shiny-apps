@@ -19,6 +19,8 @@ source("module_dist_discrete_geometry_trial.R", encoding = "UTF-8")
 source("module_dist_discrete_nb_failure.R", encoding = "UTF-8")
 ### *. 1.5. 음이항 분포 : r번째 시행횟수 ----------------------------------
 source("module_dist_discrete_nb_trial.R", encoding = "UTF-8")
+### *. 1.6. 초기하 분포 : 비복원 추출 ----------------------------------
+source("module_dist_discrete_hypergeometric.R", encoding = "UTF-8")
 
 
 ui <- shinyUI(
@@ -48,10 +50,13 @@ ui <- shinyUI(
          dist_discrete_geometry_trial_UI("dist_discrete_geometry_trial")
       ),
       tabPanel("음이항분포-실패횟수",
-               dist_discrete_nb_failure_UI("dist_discrete_nb_failure")
+          dist_discrete_nb_failure_UI("dist_discrete_nb_failure")
       ),
       tabPanel("음이항분포-시행횟수",
-               dist_discrete_nb_trial_UI("dist_discrete_nb_trial")
+          dist_discrete_nb_trial_UI("dist_discrete_nb_trial")
+      ),
+      tabPanel("초기하 분포",
+          dist_discrete_hypergeometric_UI("dist_discrete_hypergeometric")
       )
    )
   )
@@ -70,7 +75,8 @@ server <- shinyServer(function(input, output) {
   dist_discrete_geometry_failure_server("dist_discrete_geometry_failure")
   dist_discrete_geometry_trial_server("dist_discrete_geometry_trial")
   dist_discrete_nb_failure_server("dist_discrete_nb_failure")
-  dist_discrete_nb_trial_server("dist_discrete_nb_trial")  
+  dist_discrete_nb_trial_server("dist_discrete_nb_trial")
+  dist_discrete_hypergeometric_server("dist_discrete_hypergeometric")  
 
 })
 
