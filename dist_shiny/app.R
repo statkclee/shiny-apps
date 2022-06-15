@@ -57,6 +57,13 @@ ui <- shinyUI(
       ),
       tabPanel("초기하 분포",
           dist_discrete_hypergeometric_UI("dist_discrete_hypergeometric")
+      ),
+      # III. footer.html ---------------------------------                   
+      tags$footer(
+        tags$div(
+          class = "footer_container", 
+          includeHTML(path = "www/footer.html")
+        )
       )
    )
   )
