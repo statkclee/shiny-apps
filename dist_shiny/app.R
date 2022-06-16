@@ -21,11 +21,16 @@ source("module_dist_discrete_nb_failure.R", encoding = "UTF-8")
 source("module_dist_discrete_nb_trial.R", encoding = "UTF-8")
 ### *. 1.6. 초기하 분포 : 비복원 추출 ----------------------------------
 source("module_dist_discrete_hypergeometric.R", encoding = "UTF-8")
+## *. 2. 연속형 분포 ---------------------------------
+### *. 2.1. 정규 분포 ----------------------------------
+source("module_dist_continuous_normal.R", encoding = "UTF-8")
+### *. 2.2. 로그정규 분포 ----------------------------------
+source("module_dist_continuous_lognormal.R", encoding = "UTF-8")
 
 
 ui <- shinyUI(
 
-  navbarPage("확률 분포",
+  navbarPage("통계학",
              
     # I. 분포 ---------------------------------
     tabPanel("확률 분포 분류",
@@ -57,14 +62,24 @@ ui <- shinyUI(
       ),
       tabPanel("초기하 분포",
           dist_discrete_hypergeometric_UI("dist_discrete_hypergeometric")
-      ),
-      # III. footer.html ---------------------------------                   
-      tags$footer(
-        tags$div(
-          class = "footer_container", 
-          includeHTML(path = "www/footer.html")
-        )
       )
+    ),
+    # III. 연속형 확률분포 ---------------------------------             
+    navbarMenu("연속형 확률분포",
+      tabPanel("정규 분포",
+         dist_continuous_normal_UI("dist_continuous_normal")
+      ),
+       tabPanel("로그-정규 분포",
+         dist_continuous_lognormal_UI("dist_continuous_lognormal")
+      ),
+    
+    # IV. footer.html ---------------------------------                   
+    tags$footer(
+      tags$div(
+        class = "footer_container", 
+        includeHTML(path = "www/footer.html")
+      )
+    )
    )
   )
 )
@@ -84,7 +99,11 @@ server <- shinyServer(function(input, output) {
   dist_discrete_nb_failure_server("dist_discrete_nb_failure")
   dist_discrete_nb_trial_server("dist_discrete_nb_trial")
   dist_discrete_hypergeometric_server("dist_discrete_hypergeometric")  
-
+  
+  # III. 연속형 확률분포 ---------------------------------               
+  dist_continuous_normal_server("dist_continuous_normal")
+  dist_continuous_lognormal_server("dist_continuous_lognormal")
+  
 })
 
 
