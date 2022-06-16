@@ -70,6 +70,13 @@ shiny_list <- list(
     footer = "2022-06-15"
   ),  
   tibble(
+    title = "회귀분석",
+    image = "assets/favicon-regression.png",
+    text = "선형 회귀 분석",
+    link = "https://r2bit.shinyapps.io/reg_shiny/",
+    footer = "2022-06-16"
+  ),    
+  tibble(
     title = "모의실험",
     image = "assets/favicon-simulation.png",
     text = "동전, 주사위 던지기 ...",
