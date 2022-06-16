@@ -4,7 +4,7 @@ showtext_auto()
 
 
 # 1. 모듈 UI ----------------------------
-dist_discrete_beta_UI <- function(id) {
+dist_continuous_beta_UI <- function(id) {
   
   ns <- NS(id)
   
@@ -110,7 +110,7 @@ dist_discrete_beta_UI <- function(id) {
 
 
 # 2. 모듈 서버 ----------------------------
-dist_discrete_beta_server <- function(id) {
+dist_continuous_beta_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     
     # 1. 수식 -----------------------
