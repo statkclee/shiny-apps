@@ -1,0 +1,13 @@
+name: reg_shiny
+title: reg_shiny
+username:
+account: dl-dashboard
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6499329
+bundleId: 6013163
+url: https://r2bit.shinyapps.io/reg_shiny/
+when: 1655367975.51423
+lastSyncTime: 1655367975.51424
+asMultiple: FALSE
+asStatic: FALSE
