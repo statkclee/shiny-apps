@@ -4,15 +4,6 @@ library(shinydashboard)
 library(shinydashboardPlus)
 library(plotly)
 
-
-
-
-library(showtext)
-# font_add_google(name = "Nanum Gothic", regular.wt = 400)
-showtext_auto()
-
-
-
 # 1. 정규분포와 t-분포 -------------------
 ## 1.1. Function to fit Model ------------
 fn_InputData <- function(pmean, psd, df1, p, p_tail){

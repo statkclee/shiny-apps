@@ -1,3 +1,6 @@
+library(showtext)
+# font_add_google(name = "Nanum Gothic", regular.wt = 400)
+showtext_auto()
 
 
 # 1. 모듈 UI ----------------------------

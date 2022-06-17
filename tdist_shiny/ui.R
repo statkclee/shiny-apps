@@ -5,9 +5,13 @@ source('global.R')
 
 # Define UI for the application
 
-module_tdist_normal_ui <- shiny::tagList(
-  
+shiny::tagList(
+
   fluidPage(
+    headerPanel(title = div(img(src='koRea_logo.png', align = 'left', width = "7%"),
+                            "표준정규분포와 t-분포 특성"),
+                windowTitle = "표준정규분포와 t-분포 특성"),
+    
     sidebarPanel(width=3,
                  
       tags$h3("표준정규분포와 t-분포 특성"),
@@ -103,7 +107,16 @@ module_tdist_normal_ui <- shiny::tagList(
       condition = "input.radio_normal_studnet == 'separate'",
         box(title = '분포와 확률', width = 12,
              plotOutput(outputId = 'dnorm_plot', height = '375'),
-             plotOutput(outputId = 'dt_plot', height = '375')))
-  )
+             plotOutput(outputId = 'dt_plot', height = '375'))),
+    
+    # IV. footer.html ---------------------------------                   
+    tags$footer(
+      tags$div(
+        class = "footer_container", 
+        includeHTML(path = "www/footer.html")
+      )
+    )
+  ),
+
 ))
 

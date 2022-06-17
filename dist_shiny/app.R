@@ -118,9 +118,9 @@ ui <- shinyUI(
      )
    ),
 
-   tabPanel("t-분포와 정규분포",
-         module_normal_student_UI("normal_tdist")
-   ),
+   # tabPanel("t-분포와 정규분포",
+   #       module_normal_student_UI("normal_tdist")
+   # ),
               
      
     # IV. footer.html ---------------------------------                   
@@ -160,8 +160,8 @@ server <- shinyServer(function(input, output) {
   dist_continuous_logistic_server("dist_continuous_logistic")  
   dist_continuous_weibull_server("dist_continuous_weibull")  
   
-  # IV. t-분포와 정규분포 ---------------------------------               
-  module_normal_student_server("normal_tdist")
+  # # IV. t-분포와 정규분포 ---------------------------------               
+  # module_normal_student_server("normal_tdist")
   
 })
 
