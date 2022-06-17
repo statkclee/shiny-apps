@@ -1,222 +1,100 @@
+## Nicole's Second Shiny Demo App
+## N. Radziwill, 12/6/2015, http://atomic-temporary-5081318.wpcomstaging.com
+## Used code from http://github.com/homerhanumat as a base
+###########################################################
+## ui
+###########################################################
+
+ui <- fluidPage(
+  titlePanel('Sampling Distributions and the Central Limit Theorem'),
+  sidebarPanel(
+    helpText('Choose your source distribution and number of items, n, in each
+sample. 10000 replications will be run when you click "Sample Now".'),
+h6(a("Read an article about this simulation at http://www.r-bloggers.com",
+     href="http://www.r-bloggers.com/sampling-distributions-and-central-limit-theorem-in-r/", target="_blank")),
+sliderInput(inputId="n","Sample Size n",value=30,min=5,max=100,step=2),
+radioButtons("src.dist", "Distribution type:",
+             c("Exponential: Param1 = mean, Param2 = not used" = "E",
+               "Normal: Param1 = mean, Param2 = sd" = "N",
+               "Uniform: Param1 = min, Param2 = max" = "U",
+               "Poisson: Param1 = lambda, Param2 = not used" = "P",
+               "Cauchy: Param1 = location, Param2 = scale" = "C",
+               "Binomial: Param1 = size, Param2 = success prob" = "B",
+               "Gamma: Param1 = shape, Param2 = scale" = "G",
+               "Chi Square: Param1 = df, Param2 = ncp" = "X",
+               "Student t: Param1 = df, Param2 = not used" = "T")),
+numericInput("param1","Parameter 1:",10),
+numericInput("param2","Parameter 2:",2),
+actionButton("takeSample","Sample Now")
+  ), # end sidebarPanel
+mainPanel(
+  # Use CSS to control the background color of the entire page
+  tags$head(
+    tags$style("body {background-color: #9999aa; }")
+  ),
+  plotOutput("plotSample")
+) # end mainPanel
+) # end UI
+
+##############################################################
+## server
+##############################################################
 
 library(shiny)
-library(ggplot2)
-library(plotly)
-library(rmarkdown)
-library(knitr)
-library(pander)
+r <- 10000 # Number of replications... must be ->inf for sampling distribution!
 
-# Define UI for application that draws a histogram
-ui <- shiny::tagList(
-  withMathJax(), 
-
-
-  # Sidebar with a slider input for number of bins
-  fluidPage(
-    theme = shinythemes::shinytheme("flatly"),
-    sidebarLayout(
-      sidebarPanel(width=2, 
-        tags$h2("데이터:"),
-        textInput("x", "x", value = "90, 100, 90, 80, 87, 75", placeholder = "Enter values separated by a comma with decimals as points, e.g. 4.2, 4.4, 5, 5.03, etc."),
-        textInput("y", "y", value = "950, 1100, 850, 750, 950, 775", placeholder = "Enter values separated by a comma with decimals as points, e.g. 4.2, 4.4, 5, 5.03, etc."),
-        hr(),
-        tags$h2("그래프:"),
-        checkboxInput("se", "회귀선을 감싸는 신뢰구간 추가", TRUE),
-        textInput("xlab", label = "xy 축 라벨:", value = "x", placeholder = "x label"),
-        textInput("ylab", label = NULL, value = "y", placeholder = "y label"),
-      ),
-      
-      mainPanel(
-        
-        fluidRow(
-          column(2, 
-             tags$h3("데이터:"),
-             DT::dataTableOutput("tbl")
-          ),
-          column(5, 
-                 tags$h3("회귀 그래프:"),
-                 plotlyOutput("plot")
-          ),
-          column(5, 
-                 tags$h3("R 회귀출력결과:"),
-                 verbatimTextOutput("summary")
-          )
-        ),
-        
-        fluidRow(
-          column(4, 
-                 tags$hr(),
-                 tags$h3("회귀 통계량:"),
-                 uiOutput("results")
-          ),
-          column(4, 
-                 tags$hr(),
-                 tags$h3("수작업 검증계산:"),
-                 tags$h4("1. 기본 계산값"),
-                 uiOutput("data"),
-                 tags$h4("2. 상세 계산결과"),
-                 uiOutput("by_hand")                      
-          ),
-          column(4, 
-                 tags$hr(),                 
-                 tags$h3("해석:"),
-                 uiOutput("interpretation")
-          )
-        )
-      )
-    )
-  )
-)
-
+palette(c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3",
+          "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999"))
 
 server <- function(input, output) {
-  extract <- function(text) {
-    text <- gsub(" ", "", text)
-    split <- strsplit(text, ",", fixed = FALSE)[[1]]
-    as.numeric(split)
-  }
+  set.seed(as.numeric(Sys.time()))
   
-  # Data output
-  output$tbl <- DT::renderDataTable({
-    y <- extract(input$y)
-    x <- extract(input$x)
-    DT::datatable(data.frame(x, y),
-                  extensions = "Buttons",
-                  options = list(
-                    lengthChange = FALSE,
-                    columnDefs = list(list(className = 'dt-center', targets = 0:2)),
-                    dom = "t",
-                    buttons = c("copy", "csv", "excel", "print")
-                  )
-    )
-  })
+  # Create a reactive container for the data structures that the simulation
+  # will produce. The rv$variables will be available to the sections of your
+  # server code that prepare output for the UI, e.g. output$plotSample
+  rv <- reactiveValues(sample = NULL,
+                       all.sums = NULL,
+                       all.means = NULL,
+                       all.vars = NULL)
   
-  output$data <- renderUI({
-    y <- extract(input$y)
-    x <- extract(input$x)
-    if (anyNA(x) | length(x) < 2 | anyNA(y) | length(y) < 2) {
-      "입력값을 처리하기 부적절하거나 관측점 수가 부족합니다."
-    } else if (length(x) != length(y)) {
-      "x 와 y 두변수 관측점 갯수가 동일해야 합니다."
-    } else {
-      withMathJax(
-        paste0("\\(\\bar{x} =\\) ", round(mean(x), 3)),
-        br(),
-        paste0("\\(\\bar{y} =\\) ", round(mean(y), 3)),
-        br(),
-        paste0("\\(n =\\) ", length(x))
-      )
+  # Note: We are giving observeEvent all the output connected to the UI actionButton.
+  # We can refer to input variables from our UI as input$variablename
+  observeEvent(input$takeSample,
+               {
+                 my.samples <- switch(input$src.dist,
+                                      "E" = matrix(rexp(input$n*r,input$param1),r),
+                                      "N" = matrix(rnorm(input$n*r,input$param1,input$param2),r),
+                                      "U" = matrix(runif(input$n*r,input$param1,input$param2),r),
+                                      "P" = matrix(rpois(input$n*r,input$param1),r),
+                                      "C" = matrix(rcauchy(input$n*r,input$param1,input$param2),r),
+                                      "B" = matrix(rbinom(input$n*r,input$param1,input$param2),r),
+                                      "G" = matrix(rgamma(input$n*r,input$param1,input$param2),r),
+                                      "X" = matrix(rchisq(input$n*r,input$param1),r),
+                                      "T" = matrix(rt(input$n*r,input$param1),r))
+                 
+                 # It was very important to make sure that rv contained numeric values for plotting:
+                 rv$sample <- as.numeric(my.samples[1,])
+                 rv$all.sums <- as.numeric(apply(my.samples,1,sum))
+                 rv$all.means <- as.numeric(apply(my.samples,1,mean))
+                 rv$all.vars <- as.numeric(apply(my.samples,1,var))
+               }
+  )
+  
+  output$plotSample <- renderPlot({
+    # Plot only when user input is submitted by clicking "Sample Now"
+    if (input$takeSample) {
+      # Create a 2x2 plot area & leave a big space (5) at the top for title
+      par(mfrow=c(2,2), oma=c(0,0,5,0))
+      hist(rv$sample, main="Distribution of One Sample",
+           ylab="Frequency",col=1)
+      hist(rv$all.sums, main="Sampling Distribution of the Sum",
+           ylab="Frequency",col=2)
+      hist(rv$all.means, main="Sampling Distribution of the Mean",
+           ylab="Frequency",col=3)
+      hist(rv$all.vars, main="Sampling Distribution of the Variance",
+           ylab="Frequency",col=4)
+      mtext("Simulation Results", outer=TRUE, cex=3)
     }
-  })
+  }, height=660, width=900) # end plotSample
   
-  output$by_hand <- renderUI({
-    y <- extract(input$y)
-    x <- extract(input$x)
-    fit <- lm(y ~ x)
-    withMathJax(
-      paste0("\\(\\hat{\\beta}_1 = \\dfrac{\\big(\\sum^n_{i = 1} x_i y_i \\big) - n \\bar{x} \\bar{y}}{\\sum^n_{i = 1} (x_i - \\bar{x})^2} = \\) ", round(fit$coef[[2]], 3)),
-      br(),
-      paste0("\\(\\hat{\\beta}_0 = \\bar{y} - \\hat{\\beta}_1 \\bar{x} = \\) ", round(fit$coef[[1]], 3)),
-      br(),
-      br(),
-      paste0("\\( \\Rightarrow y = \\hat{\\beta}_0 + \\hat{\\beta}_1 x = \\) ", round(fit$coef[[1]], 3), " + ", round(fit$coef[[2]], 3), "\\( x \\)")
-    )
-  })
-  
-  output$summary <- renderPrint({
-    y <- extract(input$y)
-    x <- extract(input$x)
-    fit <- lm(y ~ x)
-    summary(fit)
-  })
-  
-  output$results <- renderUI({
-    y <- extract(input$y)
-    x <- extract(input$x)
-    fit <- lm(y ~ x)
-    withMathJax(
-      paste0(
-        "* 조정 결정계수 \\( R^2 = \\) ", round(summary(fit)$adj.r.squared, 3) ),
-      tags$br(),
-      paste0(
-        "* \\( \\beta_0 = \\) ", round(fit$coef[[1]], 3) ),
-      tags$br(),
-      paste0(
-        "* \\( \\beta_1 = \\) ", round(fit$coef[[2]], 3) ),
-      tags$br(),
-      paste0(
-        "* P-값 ", "\\( = \\) ", signif(summary(fit)$coef[2, 4], 3)
-      )
-    )
-  })
-  
-  output$interpretation <- renderUI({
-    y <- extract(input$y)
-    x <- extract(input$x)
-    fit <- lm(y ~ x)
-    if (summary(fit)$coefficients[1, 4] < 0.05 & summary(fit)$coefficients[2, 4] < 0.05) {
-      withMathJax(
-        paste0("[회귀계수를 해석하기 전에 선형회귀 가정(독립, 선형, 정규성, 등분산성)이 만족되는지 확인한다]"),
-        br(),
-        tags$br(),
-        paste0( input$xlab, " = 0 에 대해, ", input$ylab, " 평균이 = ", round(fit$coef[[1]], 3), "이다."),
-        br(),
-        tags$br(),
-        paste0(input$xlab, "이 한단위 증가할때마다, ", input$ylab, " 는 ", abs(round(fit$coef[[2]], 3)), " 만큼",
-               ifelse(round(fit$coef[[2]], 3) >= 0, "평균적으로 증가한다.", "평균적으로 감소한다."))
-      )
-    } else if (summary(fit)$coefficients[1, 4] < 0.05 & summary(fit)$coefficients[2, 4] >= 0.05) {
-      withMathJax(
-        paste0("[회귀계수를 해석하기 전에 선형회귀 가정(독립, 선형, 정규성, 등분산성)이 만족되는지 확인한다]"),
-        br(),
-        tags$br(),
-        paste0("For a (hypothetical) value of ", input$xlab, " = 0, the mean of ", input$ylab, " = ", round(fit$coef[[1]], 3), "."),
-        br(),
-        tags$br(),
-        paste0("\\( \\beta_1 \\)", " 는 0 과 유의적인 차이는 없다 (p-value = ", 
-               round(summary(fit)$coefficients[2, 4], 3), ")", 
-               input$xlab, " 와 ", input$ylab, " 간에 유의적 관계는 없다.")
-      )
-    } else if (summary(fit)$coefficients[1, 4] >= 0.05 & summary(fit)$coefficients[2, 4] < 0.05) {
-      withMathJax(
-        paste0("[회귀계수를 해석하기 전에 선형회귀 가정(독립, 선형, 정규성, 등분산성)이 만족되는지 확인한다]"),
-        br(),
-        tags$br(),
-        paste0("\\( \\beta_0 \\)", " 는 0 과 유의적인 차이는 없다 (p-value = ", round(summary(fit)$coefficients[1, 4], 3), 
-               ") 따라서,", input$xlab, " = 0 일 때, ", input$ylab, "의 평균은 0 과 유의적인 차이는 없다."),
-        br(),
-        tags$br(),
-        paste0(input$xlab, "이 한단위 증가할때마다, ", input$ylab, " 는 ", abs(round(fit$coef[[2]], 3)), " 만큼",
-               ifelse(round(fit$coef[[2]], 3) >= 0, "평균적으로 증가한다.", "평균적으로 감소한다."))
-      )
-    } else {
-      withMathJax(
-        paste0("[회귀계수를 해석하기 전에 선형회귀 가정(독립, 선형, 정규성, 등분산성)이 만족되는지 확인한다]"),
-        br(),
-        tags$br(),
-        paste0("\\( \\beta_0 \\)", " 와 ", "\\( \\beta_1 \\)", " 가 0 과 유의적인 차이가 없다 (p-values = ", 
-               round(summary(fit)$coefficients[1, 4], 3), " 와 ", round(summary(fit)$coefficients[2, 4], 3), 
-               ") 따라서 ", input$ylab, " 의 평균이 0과 유의적인 차이는 없다.")
-      )
-    }
-  })
-  
-  output$plot <- renderPlotly({
-    y <- extract(input$y)
-    x <- extract(input$x)
-    fit <- lm(y ~ x)
-    dat <- data.frame(x, y)
-    p <- ggplot(dat, aes(x = x, y = y)) +
-      geom_point() +
-      stat_smooth(method = "lm", se = input$se) +
-      ylab(input$ylab) +
-      xlab(input$xlab) +
-      theme_minimal()
-    ggplotly(p)
-  })
-  
-
-}
-
-# Run the application
-shinyApp(ui = ui, server = server)
+} # end server
