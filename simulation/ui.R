@@ -50,7 +50,11 @@ body <- dashboardBody(
             box(title = "주사위 눈",
                 width = 6,
                 verbatimTextOutput("roll_dice_text")
-            )
+            ),
+            box(width = 6, title = "주사위 던지기 이력", status = "primary", solidHeader = TRUE,
+                verbatimTextOutput("draw_dice_history_text")
+            )            
+            
       )
   )
   

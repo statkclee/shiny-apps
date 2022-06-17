@@ -13,12 +13,13 @@ shinyServer(function(input, output, session) {
     coin_value <- isolate(sample(c("앞", "뒤"), size=1, prob = c(coin_prob(), 1 - coin_prob()), replace=TRUE))
   })
   
-  ### 추후 수정하여 동전던지기 이력이 보여줘야함....
-  # coin_toss_history <- reactive({
-  #   c(coin_value())
-  # })
-  
+  ### 동전 던지기 이력
+  coin_toss_val <- c()
 
+  coin_toss_history <- reactive({
+    coin_toss_val <<- c(coin_toss_val, coin_value())
+  })
+  
     
   ## 1.2. Get Dice Value --------------
   dice_value <- reactive({
@@ -26,11 +27,19 @@ shinyServer(function(input, output, session) {
     dice_value <- isolate(sample(1:6, size=1, prob = c(1/6, 1/6, 1/6, 1/6, 1/6, 1/6), replace=TRUE))
   })
   
+  ### 주사위 던지기 이력 ------------------
+  dice_draw_val <- c()
+  
+  dice_draw_history <- reactive({
+    dice_draw_val <<- c(dice_draw_val, dice_value())
+  })
+  
+  
   # 2. Value Box --------------------    
   ## 2.1. Dice Value Box ------------
   output$dice_valuebox <- renderValueBox({
     valueBox(
-      value = mean(sample(1:6, size=1, prob = c(1/6, 1/6, 1/6, 1/6, 1/6, 1/6), replace=TRUE)),
+      value = sample(1:6, size=1, prob = c(1/6, 1/6, 1/6, 1/6, 1/6, 1/6), replace=TRUE),
       subtitle = "Die Mean Value",
       icon = icon("gamepad")
     )
@@ -38,7 +47,7 @@ shinyServer(function(input, output, session) {
   ## 2.2. Coin Value Box ------------
   output$coin_valuebox <- renderValueBox({
     valueBox(
-      value = mean(sample(0:1, size=10000, prob = c(1/2, 1/2), replace = TRUE)),
+      value = sample(0:1, size=1, prob = c(1/2, 1/2), replace = TRUE),
       subtitle = "Coin Mean Value",
       icon = icon("bitcoin")
     )
@@ -55,7 +64,7 @@ shinyServer(function(input, output, session) {
   })
 
   output$toss_coin_history_text <- renderText({
-    # print(coin_reactive_values$df_data)
+    print(coin_toss_history())
   })
   
   
@@ -63,6 +72,11 @@ shinyServer(function(input, output, session) {
   output$roll_dice_text <- renderText({
     print(dice_value())
   })
+  
+  output$draw_dice_history_text <- renderText({
+    print(dice_draw_history())
+  })
+  
   
   # 4. Display a Simulation with Image --------------------
   ## 3.1. Display Coin Text Result --------------------
