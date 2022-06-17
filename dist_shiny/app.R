@@ -19,6 +19,7 @@ source("module_dist_discrete_nb_failure.R", encoding = "UTF-8")
 source("module_dist_discrete_nb_trial.R", encoding = "UTF-8")
 ### *. 1.5. 초기하 분포 : 비복원 추출 ----------------------------------
 source("module_dist_discrete_hypergeometric.R", encoding = "UTF-8")
+
 ## *. 2. 연속형 분포 ---------------------------------
 ### *. 2.1. t-분포 ----------------------------------
 source("module_dist_continuous_student.R", encoding = "UTF-8")
@@ -41,6 +42,8 @@ source("module_dist_continuous_logistic.R", encoding = "UTF-8")
 ### *. 2.10. 와이블 분포 ----------------------------------
 source("module_dist_continuous_weibull.R", encoding = "UTF-8")
 
+## *. 3. 정규분포 vs t-분포 ---------------------------------
+source("module_normal_student.R", encoding = "UTF-8")
 
 ui <- shinyUI(
 
@@ -112,7 +115,13 @@ ui <- shinyUI(
      ), 
      tabPanel("와이블 분포",
          dist_continuous_weibull_UI("dist_continuous_weibull")
-     ), 
+     )
+   ),
+
+   tabPanel("t-분포와 정규분포",
+         module_normal_student_UI("normal_tdist")
+   ),
+              
      
     # IV. footer.html ---------------------------------                   
     tags$footer(
@@ -121,7 +130,6 @@ ui <- shinyUI(
         includeHTML(path = "www/footer.html")
       )
     )
-   )
   )
 )
 
@@ -151,6 +159,9 @@ server <- shinyServer(function(input, output) {
   dist_continuous_fisher_server("dist_continuous_fisher")
   dist_continuous_logistic_server("dist_continuous_logistic")  
   dist_continuous_weibull_server("dist_continuous_weibull")  
+  
+  # IV. t-분포와 정규분포 ---------------------------------               
+  module_normal_student_server("normal_tdist")
   
 })
 

@@ -5,15 +5,12 @@ source('global.R')
 
 # Define UI for the application
 
-shinyUI(
-  pageWithSidebar(
-
-  headerPanel(title = div(img(src='koRea_logo.png', align = 'left', width="7%"),
-                            "표준 정규분포와 t-분포 특성"),
-              windowTitle = "표준 정규분포와 t-분포 특성"),
-
-  sidebarPanel(width=3,
-
+module_tdist_normal_ui <- shiny::tagList(
+  
+  fluidPage(
+    sidebarPanel(width=3,
+                 
+      tags$h3("표준정규분포와 t-분포 특성"),
       tags$br(),
 
       tags$hr(style="border-color: purple;"),
