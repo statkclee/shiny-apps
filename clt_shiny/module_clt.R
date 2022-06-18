@@ -11,133 +11,142 @@ showtext_auto()
 
 # Define UI --------------------------------------------------------------------
 
-ui <- fluidPage(
-  # Title ----
-  titlePanel("평균 중심극한정리", windowTitle = "평균 중심극한정리"),
+module_clt_UI <- function(id) {
   
-  sidebarLayout(
-    sidebarPanel(
-      # 1. 분포 선택 ----
-      tags$h3("모집단"),
-      radioButtons(inputId = "dist", "모집단 분포 선택:",
-                   c("정규분포" = "rnorm",
-                     "지수분포" = "rexp",
-                     "균등분포" = "runif"),
-                   selected = "rnorm"),
-      
-      # Distribution parameters / features ----
-      uiOutput("mu"), # 정규분포
-      uiOutput("sd"), # 정규분포
-      uiOutput("rate"), # 지수분포
-      uiOutput("minmax"), # 균등분포
-      
-      tags$hr(style="border-color: blue;"),
-      
-      ## 1.1. 정규분포 모수 ----
-      tags$h4("분포 모수(Parameters)"),
-      conditionalPanel(
-        condition = "input.dist == 'rnorm'",
-        sliderInput("mu",
-                    "평균: ",
-                    value = 0,
-                    min = -40,
-                    max = 50),
-        sliderInput("sd",
-                    "표준 편차: ",
-                    value = 20,
-                    min = 1,
-                    max = 30)
-      ),
-      ## 1.2. 지수분포 모수 ----
-      conditionalPanel(
-        condition = "input.dist == 'rexp'",
-        sliderInput("rate",
-                    "모수 범위",
-                    value = 1,
-                    min = 0.5,
-                    max = 20)
-      ),
-      
-      ## 1.3. 균등분포 모수 ----
-      conditionalPanel(
-        condition = "input.dist == 'runif'",
-        sliderInput("minmax",
-                    "최대값과 최소값 범위",
-                    value = c(5, 15),
-                    min = 0,
-                    max = 20)
-      ),
-      
-      tags$hr(style="border-color: blue;"),        
-      
-      # 표본크기와 반복횟수 ----
-      # 표본크기 ----
-      tags$h3("표본크기와 반복횟수"),
-      sliderInput(inputId = "n",
-                  "표본크기:", 
-                  value = 30,
-                  min = 2,
-                  max = 500),
-      br(),
-      
-      # 반복횟수 ----
-      sliderInput(inputId = "k",
-                  "반복 횟수:",
-                  value = 200,
-                  min = 10,
-                  max = 1000)
-    ),
-    
-    mainPanel(
-      tabsetPanel(
-        type = "tabs",
-        # 탭: 모집단 분포 탭 ----
-        tabPanel(
-          title = "모집단 분포",
-          plotOutput("pop_dist", height = "500px"),
-          br()
+  ns <- NS(id)
+  
+  fluidPage(
+
+    sidebarLayout(
+      sidebarPanel(
+        tags$h3("평균 중심극한정리"),
+        # 1. 분포 선택 ----
+        tags$h4("모집단"),
+        radioButtons(inputId = ns("dist"), "모집단 분포 선택:",
+                     c("정규분포" = "rnorm",
+                       "지수분포" = "rexp",
+                       "균등분포" = "runif"),
+                     selected = "rnorm"),
+        
+        # Distribution parameters / features ----
+        uiOutput( ns("mu") ), # 정규분포
+        uiOutput( ns("sd") ), # 정규분포
+        uiOutput( ns("rate") ), # 지수분포
+        uiOutput( ns("minmax") ), # 균등분포
+        
+        tags$hr(style="border-color: blue;"),
+        
+        ## 1.1. 정규분포 모수 ----
+        tags$h4("분포 모수(Parameters)"),
+        conditionalPanel(
+          # condition = "input.dist == 'rnorm'",
+          condition = paste0("input['", ns("dist"), "'] == 'rnorm'"),                 
+          sliderInput( ns("mu"),
+                      "평균: ",
+                      value = 0,
+                      min = -40,
+                      max = 50),
+          sliderInput( ns("sd"),
+                      "표준 편차: ",
+                      value = 20,
+                      min = 1,
+                      max = 30)
         ),
-        # 탭: 표본 ----
-        tabPanel(
-          title = "표본",
-          br(),
-          plotOutput("sample_dist", height = "600px"),
-          div(h3(textOutput("num_samples")), align = "center"),
-          br()
+        ## 1.2. 지수분포 모수 ----
+        conditionalPanel(
+          # condition = "input.dist == 'rexp'",
+          condition = paste0("input['", ns("dist"), "'] == 'rexp'"),                 
+          sliderInput( ns("rate"),
+                      "모수 범위",
+                      value = 1,
+                      min = 0.5,
+                      max = 20)
         ),
-        # 탭: 표본 분포 ----
-        tabPanel(
-          title = "표본 분포",
-          
-          fluidRow(
-            column(width = 7,
-                   br(), br(),
-                   # CLT description ----
-                   div(textOutput("CLT_descr"), align = "justify")),
-            column(width = 5,
-                   br(),
-                   # Population plot ----
-                   plotOutput("pop_dist_two", width = "85%", height = "200px"))
+        
+        ## 1.3. 균등분포 모수 ----
+        conditionalPanel(
+          # condition = "input.dist == 'runif'",
+          condition = paste0("input['", ns("dist"), "'] == 'runif'"),                 
+          sliderInput( ns("minmax"),
+                      "최대값과 최소값 범위",
+                      value = c(5, 15),
+                      min = 0,
+                      max = 20)
+        ),
+        
+        tags$hr(style="border-color: blue;"),        
+        
+        # 표본크기와 반복횟수 ----
+        # 표본크기 ----
+        tags$h4("표본크기와 반복횟수"),
+        sliderInput(inputId = ns("n"),
+                    "표본크기:", 
+                    value = 30,
+                    min = 2,
+                    max = 500),
+        br(),
+        
+        # 반복횟수 ----
+        sliderInput(inputId = ns("k"),
+                    "반복 횟수:",
+                    value = 200,
+                    min = 10,
+                    max = 1000)
+      ),
+      
+      mainPanel(
+        tabsetPanel(
+          type = "tabs",
+          # 탭: 모집단 분포 탭 ----
+          tabPanel(
+            title = "모집단 분포",
+            plotOutput( ns("pop_dist"), height = "500px"),
+            br()
           ),
-          
-          fluidRow(
-            column(width = 12,
-                   br(),
-                   # Sampling plot ----
-                   plotOutput("sampling_dist"),
-                   # Sampling description ----
-                   div(textOutput("sampling_descr", inline = TRUE), align = "center"))
+          # 탭: 표본 ----
+          tabPanel(
+            title = "표본",
+            br(),
+            plotOutput( ns("sample_dist"), height = "600px"),
+            div(h3(textOutput("num_samples")), align = "center"),
+            br()
+          ),
+          # 탭: 표본 분포 ----
+          tabPanel(
+            title = "표본 분포",
+            
+            fluidRow(
+              column(width = 7,
+                     br(), br(),
+                     # CLT description ----
+                     div(textOutput( ns("CLT_descr")), align = "justify")),
+              column(width = 5,
+                     br(),
+                     # Population plot ----
+                     plotOutput( ns("pop_dist_two"), width = "85%", height = "200px"))
+            ),
+            
+            fluidRow(
+              column(width = 12,
+                     br(),
+                     # Sampling plot ----
+                     plotOutput( ns("sampling_dist")),
+                     # Sampling description ----
+                     div(textOutput( ns("sampling_descr"), inline = TRUE), align = "center"))
+            )
           )
         )
       )
     )
   )
-)
+}
+
 # Define server function --------------------------------------------
 
 seed <- as.numeric(Sys.time())
 
-server <- function(input, output, session) {
+module_clt_server <- function(id) {
+  moduleServer(id, function(input, output, session) {
   
 
   # 균등분포 != 0 되지 않게 함 ----
@@ -537,6 +546,6 @@ server <- function(input, output, session) {
            )    
     
   })
+
+  })
 }
-# Create the Shiny app object ---------------------------------------
-shinyApp(ui = ui, server = server)

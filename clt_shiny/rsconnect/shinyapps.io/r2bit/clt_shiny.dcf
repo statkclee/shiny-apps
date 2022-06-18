@@ -1,0 +1,13 @@
+name: clt_shiny
+title: clt_shiny
+username:
+account: r2bit
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6509257
+bundleId: 6018988
+url: https://r2bit.shinyapps.io/clt_shiny/
+when: 1655519116.22573
+lastSyncTime: 1655519116.22576
+asMultiple: FALSE
+asStatic: FALSE
