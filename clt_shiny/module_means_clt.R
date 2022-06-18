@@ -11,7 +11,7 @@ showtext_auto()
 
 # Define UI --------------------------------------------------------------------
 
-module_clt_UI <- function(id) {
+module_means_clt_UI <- function(id) {
   
   ns <- NS(id)
   
@@ -111,9 +111,9 @@ module_clt_UI <- function(id) {
             div(h3(textOutput("num_samples")), align = "center"),
             br()
           ),
-          # 탭: 표본 분포 ----
+          # 탭: 표집 분포 ----
           tabPanel(
-            title = "표본 분포",
+            title = "표집 분포",
             
             fluidRow(
               column(width = 7,
@@ -145,7 +145,7 @@ module_clt_UI <- function(id) {
 
 seed <- as.numeric(Sys.time())
 
-module_clt_server <- function(id) {
+module_means_clt_server <- function(id) {
   moduleServer(id, function(input, output, session) {
   
 
