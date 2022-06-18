@@ -228,7 +228,9 @@ server <- function(input, output, session) {
         # geom_density() + draws a weird baseline. using stat_density() instead.
         stat_density(geom="line", color = "#195190", size = 1) +
         scale_x_continuous(limits = c(min(-100, pop$samples), max(100, pop$samples))) +
-        labs(title = distname, x = "x") +
+        labs(title = distname, 
+             x = "x",
+             y = "밀도") +
         annotate("text", x = x_pos, y = y_pos,
                  label = paste("x 평균", "=", bquote(.(m_pop)),
                                "\n", "x 표준편차", "=", bquote(.(sd_pop))),
@@ -251,7 +253,9 @@ server <- function(input, output, session) {
           geom_histogram(bins = 45, color = "white", fill = "#195190") +
           stat_density(geom = "line", color = "#195190", size = 1) +
           scale_y_continuous(expand = expand_scale(mult = c(0, .3))) +
-          labs(title = distname, x = "x") +
+          labs(title = distname, 
+               x = "x",
+               y = "밀도") +
           annotate("text", x = x_pos, y = y_pos + 0.5*max(pdens$y),
                    label = paste("mean of x", "=", bquote(.(m_pop)),
                                  "\n", "SD of x", "=", bquote(.(sd_pop))),
@@ -298,7 +302,9 @@ server <- function(input, output, session) {
         geom_histogram(bins = 45, color = "white", fill = "#195190") +
         stat_density(geom="line", color = "#195190", size = 1) +
         scale_x_continuous(limits = c(min(-100, pop$samples), max(100, pop$samples))) +
-        labs(title = distname, x = "x") +
+        labs(title = distname, 
+             x = "x",
+             y = "밀도") +
         annotate("text", x = x_pos, y = y_pos,
                  label = paste("mean of x", "=", bquote(.(m_pop)),
                                "\n", "SD of x", "=", bquote(.(sd_pop))),
@@ -384,8 +390,8 @@ server <- function(input, output, session) {
   output$sampling_dist <- renderPlot({
     
     distname = switch(input$dist,
-                      rnorm = "normal population",
-                      rlnorm  = "right skewed population")
+                      rnorm = "정규 모집단",
+                      runif  = "균등분포 모집단")
     
     n = input$n
     k = input$k
@@ -412,12 +418,12 @@ server <- function(input, output, session) {
     p = ggplot(data = ndist, aes(x = means, y = ..density..)) +
       geom_histogram(bins = 20, color = "white", fill = "#009499") +
       stat_density(geom = "line", color = "#009499", size = 1) +
-      labs(title = paste("Sampling Distribution*"),
-           x = "Sample means",
-           y = "") +
+      labs(title = paste("표본 분포*"),
+           x = "표본 평균",
+           y = "" ) +
       annotate("text", x = x_pos, y = y_pos,
-               label = paste("mean of x_bar", "=", bquote(.(m_samp)),
-                             "\n", "SE of x_bar", "=", bquote(.(sd_samp))),
+               label = paste("x_bar 평균", "=", bquote(.(m_samp)),
+                             "\n", "x_bar 표준오차", "=", bquote(.(sd_samp))),
                color = "black", size = 5) +
       theme_light(base_size = 19) +
       theme(plot.title = element_text(hjust = 0.5),
@@ -440,14 +446,15 @@ server <- function(input, output, session) {
   output$sampling_descr <- renderText({
     
     distname = switch(input$dist,
-                      rnorm = "normal population",
-                      rlnorm  = "right skewed population")
+                      rnorm = "정규분포 모집단",
+                      runif = "균등분포 모집단")
     
     k = input$k
     n = input$n
-    paste("*Distribution of means of", k, "random samples,
-          each consisting of", n, " observations
-          from a", distname)
+
+    paste("*", distname, "에서", 
+          n, "개 관측점으로 구성된", 
+          k, "번 반복한 확률표본의 평균분포")
   })
   
   # description for CLT ----
@@ -458,15 +465,17 @@ server <- function(input, output, session) {
     s_pop = round(sd(pop),2)
     
     n = input$n
-    se=round(s_pop/sqrt(n),2)
-    paste0("According to the Central Limit Theorem (CLT), the distribution of sample means
-          (the sampling distribution) should be nearly normal. The mean of
-          the sampling distribution should be approximately equal to the population mean (", m_pop, ")
-          and the standard error (the standard deviation of
-          sample means) should be approximately equal to the SD of the population divided by square root of
-          sample size (", s_pop,
-          "/sqrt(",n, ") = ", se,"). Below is our sampling distribution graph. To help compare, 
-          population distribution plot is also displayed on the right.")
+    se = round(s_pop/sqrt(n),2)
+
+    paste0("중심극한정리(Central Limit Theorem, CLT)에 따르면, 
+           표본 평균의 분포(표집분포, Sampling distribution)는 거의 정규분포가 되야한다.",
+           "표집분포의 평균은 근사적으로 모집단 평균 (", m_pop, ")과", 
+           "표준오차(표본 평균의 표준편차)는 근사적으로 모집단 표준편차를 표본크기 제곱근을 나눈 값과 
+           일치해야 한다 (", s_pop, "/sqrt(",n, ") = ", se,")", 
+           "표집분포(Sampling distribution) 그래프가 다음에 나와 있다. 비교를 통해 명확히 하기 위해, 
+           모집단 분포 그래프가 우측에 나와 있다."
+           )    
+    
   })
 }
 # Create the Shiny app object ---------------------------------------
