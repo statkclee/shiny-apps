@@ -84,6 +84,13 @@ shiny_list <- list(
     footer = "2022-06-17"
   ),    
   tibble(
+    title = "중심극한정리",
+    image = "assets/favicon-clt.png",
+    text = "대수의법칙과 중심극한정리",
+    link = "https://r2bit.shinyapps.io/clt_shiny/",
+    footer = "2022-06-17"
+  ),    
+  tibble(
     title = "모의실험",
     image = "assets/favicon-simulation.png",
     text = "동전, 주사위 던지기 ...",
