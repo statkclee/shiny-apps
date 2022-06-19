@@ -33,7 +33,8 @@ ui <- fluidPage(
                   step = 1
       ),
       hr(),
-      checkboxInput("plot", "그래프로 보시겠습니까?", TRUE)
+      checkboxInput("plot", "그래프 혹은 그래프", TRUE),
+      HTML("원리금균등상환 : 원금과 이자를 합한 상환금액이 매달 동일")
     ),
     
     # Main panel for displaying outputs ----
@@ -90,7 +91,14 @@ server <- function(input, output) {
   # Data output
   output$tbl <- DT::renderDataTable({
     mortgage(P = input$principal, I = input$interest, L = input$length, plotData = FALSE)
-    df_month <- DT::datatable(data.frame(round(aDFmonth, 2)),
+    df_month <- DT::datatable(data.frame(round(aDFmonth, 2)) %>% 
+                                rename( 월 = Month,
+                                        년 = Year,
+                                        대출잔액 = Balance,
+                                        월상환액 = Payment,
+                                        원금     = Principal,
+                                        이자     = Interest) %>% 
+                                 select(년, 월, 대출잔액, 월상환액, 원금, 이자),
                               extensions = "Buttons",
                               options = list(
                                 lengthChange = TRUE,
@@ -102,7 +110,7 @@ server <- function(input, output) {
                               ),
                               rownames = FALSE
     ) %>%
-      formatCurrency(c("Balance", "Payment", "Principal", "Interest"), 
+      formatCurrency(c("대출잔액", "월상환액", "원금", "이자"), 
                      currency = "", interval = 3, mark = ",")
   })
 
