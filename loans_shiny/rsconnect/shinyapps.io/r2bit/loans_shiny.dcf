@@ -1,0 +1,13 @@
+name: loans_shiny
+title: loans_shiny
+username:
+account: r2bit
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6513104
+bundleId: 6020881
+url: https://r2bit.shinyapps.io/loans_shiny/
+when: 1655619786.65803
+lastSyncTime: 1655619786.65805
+asMultiple: FALSE
+asStatic: FALSE

@@ -1,5 +1,5 @@
 ---
-title: "카드 Shiny 앱"
+title: "한국 R 사용자회 - Shiny 앱"
 format: html
 editor: source
 output:
@@ -103,7 +103,14 @@ shiny_list <- list(
     text = "제20대 대통령선거 투표/득표",
     link = "https://r2bit.shinyapps.io/krvote_shinydashboard/",
     footer = "2022-06-13"
-  )       
+  ),
+  tibble(
+    title = "금융",
+    image = "assets/favicon-loans.png",
+    text = "주택담보대출 모의시험",
+    link = "https://r2bit.shinyapps.io/loans_shiny/",
+    footer = "2022-06-19"
+  ) 
   
 )
 
@@ -124,7 +131,15 @@ shiny_tbl %>%
 ```
 
 
-# 개발방법 
+# 개발도구
 
 [bs4cards](https://bs4cards.djnavarro.net/articles/articles/layouts.html)
+
+# 후원
+
+이 프로그램은 과학기술진흥기금 및 복권기금의 재원으로 운영되고,과학기술정보통신부와 한국과학창의재단의 지원을 받아 수행된 성과물로 우리나라의 과학기술 발전과 사회적 가치 증진에 기여하고 있습니다. 성균관대학교 경제학과, 한밭대학교 창업경영학과에서 장소를 지원해 주셨으며, 대전과학문화거점센터 지원도 받았음을 밝혀둡니다.
+
+![](assets/sponsors.jpg)
+
+
 
