@@ -1,128 +1,112 @@
-# 대수의 법칙
-
-# Load packages -----------------------------------------------------
 library(shiny)
-library(gridExtra)
-library(tidyverse)
+library(dplyr)
+library(DT)
+library(ggplot2)
+library(reshape2)
+library(scales)
+options(scipen = 999)
 
-# Define UI ---------------------------------------------------------
+library(showtext)
+# font_add_google(name = "Nanum Gothic", regular.wt = 400)
+showtext_auto()
 
-ui <-shinyUI(fluidPage(
+source("global.R")
+
+# Define UI for slider demo app ----
+ui <- fluidPage(
   
-  sidebarPanel(
-      # 1. 분포 선택 ----
-      tags$h4("모집단"),
-      radioButtons(inputId = "dist", "모집단 분포 선택:",
-                   c("정규분포" = "rnorm",
-                     "지수분포" = "rexp"),
-                   selected = "rnorm"),
-
-      ## 1.1. 지수분포 모수 ----
-      conditionalPanel(
-        condition = "input.dist == 'rexp'",
-        # condition = paste0("input['", ns("dist"), "'] == 'rexp'"),                 
-        sliderInput( "lambda",
-                     "모수 범위",
-                     value = 1,
-                     min = 1,
-                     max = 20)
+  # Sidebar layout with input and output definitions ----
+  sidebarLayout(
+    
+    # Sidebar to demonstrate various slider options ----
+    sidebarPanel(
+      
+      # Input: Simple integer interval ----
+      numericInput("principal", "원금 (대출금, 만원)", 10000, min = 0, step = 1000),
+      hr(),
+      numericInput("interest", "연 이자율 (%)", 4, min = 0, max = 100, step = 0.01),
+      hr(),
+      sliderInput("length", "대출기간 (년)",
+                  min = 0,
+                  max = 40,
+                  value = 25,
+                  step = 1
       ),
-      ## 1.2. 정규분포 모수 ----
+      hr(),
+      checkboxInput("plot", "그래프로 보시겠습니까?", TRUE)
+    ),
+    
+    # Main panel for displaying outputs ----
+    mainPanel(
+      
+      # Output: Table summarizing the values entered ----
+      uiOutput("text"),
+      br(),
       conditionalPanel(
-        condition = "input.dist == 'rnorm'",
-        # condition = paste0("input['", ns("dist"), "'] == 'rnorm'"),
-        sliderInput( "mu",
-                     "평균: ",
-                     value = 0,
-                     min = -40,
-                     max = 50),
-        sliderInput( "sd",
-                     "표준 편차: ",
-                     value = 10,
-                     min = 1,
-                     max = 30)
-      ),
-      
-      
-      # 2. 관측수와 반복횟수 ----
-      tags$hr(style="border-color: blue;"),      
-      
-      sliderInput("n", 
-                  "관측점 수:", 
-                  value = 100,
-                  min = 10, 
-                  max = 1000),
+        condition = "input.plot == 1",
+        plotOutput("distPlot")),
+      br(),
+      conditionalPanel(
+        condition = "input.plot != 1",
+        DT::dataTableOutput("tbl")),
+      br(),
+      p(em("공지사항: 이 Shiny 앱은 어떠한 투자정보와 추천, 혹은 금융분석에 대한 정보를 
+           담고 있지 않습니다. 이 앱은 단순히 금융정보를 제공하는 것이고 이를 활용한 
+           모든 투자는 본인이 스스로 결정한 것이라 이 앱과는 아무런 관련이 없습니다.
+           이 앱에 담긴 정보를 활용한 어떤 결정도 한국 R 사용자회와 무관합니다.")),
+      p(em("이 Shiny 앱은 Antoine Soetewey 교수 코드를 참고하였습니다.")),
+      br(),
       br()
-  ),
-  
-  mainPanel(
-    
-    shiny::plotOutput("LLN_plot")
-    
+    )
   )
-))
+)
 
-# Define server function --------------------------------------------
-
-server <- shinyServer(function(input, output) {
+# Define server logic for slider examples ----
+server <- function(input, output) {
   
-  output$LLN_plot <- renderPlot({
-    
-    if (input$dist == "rnorm") {
-      # 1. 정규분포 -----------------------
-      ## LLN 모의실험 ---------------
-      normal_mns    <- NULL
-      
-      for (i in 1:input$n) normal_mns <-  c(normal_mns, rnorm( 1, input$mu, input$sd))
-      
-      normal_means <- cumsum(normal_mns)/(1:input$n)
-      
-      ## 시각화 --------------------
-      LLN_tbl <- tibble( x = 1:input$n, 
-                         y = normal_means)
-      
-      LLN_tbl %>% 
-        ggplot(aes(x=x, y=y)) +
-        geom_hline(yintercept = input$mu, color = "blue") +
-        geom_point(size = 0.7) +
-        geom_line(size = 0.5) +
-        theme_light()  +
-        labs(title = "정규분포",
-             x = "관측점 수",
-             y= "누적평균")
-      
-    } else if(input$dist == "rexp") {
-      # 2. 지수분포 -----------------------
-      exp_mean   <- 1 / input$lambda
-      
-      ## LLN 모의실험 ---------------
-      mns    <- NULL
-      
-      for (i in 1:input$n) mns <-  c(mns, rexp( 1, input$lambda))
-      
-      means <- cumsum(mns)/(1:input$n)
-      
-      ## 시각화 --------------------
-      LLN_tbl <- tibble( x = 1:input$n, 
-                         y = means)
-      
-      LLN_tbl %>% 
-        ggplot(aes(x=x, y=y)) +
-        geom_hline(yintercept = exp_mean, color = "blue") +
-        geom_point(size = 0.7) +
-        geom_line(size = 0.5) +
-        theme_light()  +
-        labs(title = "지수분포",
-             subtitle = glue::glue("모수(Lambda): {input$lambda} ,", 
-                                   "평균: {scales::comma(exp_mean, accuracy=0.2)}"),
-             x = "관측점 수",
-             y= "누적평균")
-    }
+  output$text <- renderUI({
+    mortgage(P = input$principal, I = input$interest, L = input$length, plotData = FALSE)
+    HTML(paste0(
+      "<h3>", "대출 요약", "</h3>",
+      "<h4>", "단위: 만원", "</h3>",
+      "원금 (대출금): ", format(round(input$principal, 2), big.mark = ","),
+      "<br>",
+      "연 이자율: ", input$interest, "%",
+      "<br>",
+      "기간: ", input$length, " 년 (", input$length * 12, " 월)",
+      "<br>",
+      "<b>", "월 납부액: ", format(round(monthPay, digits = 2), big.mark = ","), "</b>",
+      "<br>",
+      "<b>", "이자포함 총금액: ", "</b>", format(round(input$principal, 0), big.mark = ","), 
+      " (원금) + ", format(round(monthPay * 12 * input$length - input$principal, 0), big.mark = ","), 
+      " (이자) = ", "<b>", format(round(monthPay * 12 * input$length, digits = 0), big.mark = ","), "</b>"
+    ))
   })
   
+  output$distPlot <- renderPlot({
+    mortgage(P = input$principal, I = input$interest, L = input$length, plotData = input$plot)
+  })
   
-  
-})
+  # Data output
+  output$tbl <- DT::renderDataTable({
+    mortgage(P = input$principal, I = input$interest, L = input$length, plotData = FALSE)
+    df_month <- DT::datatable(data.frame(round(aDFmonth, 2)),
+                              extensions = "Buttons",
+                              options = list(
+                                lengthChange = TRUE,
+                                dom = "Blrtip",
+                                buttons = c("csv", "excel", "print"),
+                                
+                                lengthMenu = list(c(-1, 10, 12, 15, 25, 50, 100), 
+                                                  c("All", "10", "12", "15", "25", "50", "100"))
+                              ),
+                              rownames = FALSE
+    ) %>%
+      formatCurrency(c("Balance", "Payment", "Principal", "Interest"), 
+                     currency = "", interval = 3, mark = ",")
+  })
 
-# Create the Shiny app object ---------------------------------------
+}
+
+# Run the application
 shinyApp(ui = ui, server = server)
