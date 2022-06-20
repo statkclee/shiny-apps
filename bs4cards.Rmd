@@ -98,6 +98,13 @@ shiny_list <- list(
     footer = "2022-06-12"
   ),
   tibble(
+    title = "예측모형",
+    image = "assets/favicon-penguin.png",
+    text = "기계학습 팔머펭귄 성별 예측 시스템",
+    link = "https://r2bit.shinyapps.io/pred_shiny/",
+    footer = "2022-06-20"
+  ),
+  tibble(
     title = "선거",
     image = "assets/favicon-krvote.png",
     text = "제20대 대통령선거 투표/득표",
@@ -111,8 +118,8 @@ shiny_list <- list(
     link = "https://r2bit.shinyapps.io/loans_shiny/",
     footer = "2022-06-19"
   ) 
-  
 )
+
 
 shiny_tbl <- shiny_list %>% 
   enframe() %>% 

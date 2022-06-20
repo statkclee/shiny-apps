@@ -1,0 +1,13 @@
+name: pred_shiny
+title: pred_shiny
+username:
+account: r2bit
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6516249
+bundleId: 6022703
+url: https://r2bit.shinyapps.io/pred_shiny/
+when: 1655694057.50174
+lastSyncTime: 1655694057.50176
+asMultiple: FALSE
+asStatic: FALSE
