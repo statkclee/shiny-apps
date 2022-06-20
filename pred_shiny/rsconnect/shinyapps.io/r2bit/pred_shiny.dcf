@@ -5,9 +5,9 @@ account: r2bit
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6516249
-bundleId: 6022703
+bundleId: 6023039
 url: https://r2bit.shinyapps.io/pred_shiny/
-when: 1655694057.50174
-lastSyncTime: 1655694057.50176
+when: 1655702469.0246
+lastSyncTime: 1655702469.02461
 asMultiple: FALSE
 asStatic: FALSE

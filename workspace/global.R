@@ -1,18 +1,32 @@
+# 0. 패키지 -----------------------
 library(shiny)
 library(shinydashboard)
 library(tidymodels)
 library(tidyverse)
+library(shiny)
+library(r2d3)
+library(DALEXtra)
+library(modelStudio)
 
-penguin_model <- readRDS(url("https://github.com/statkclee/model/raw/gh-pages/data/penguin_predictvie_model.rds", "rb"))
+# 1. 데이터와 예측 모형 ---------------------------
+data <- titanic_imputed
+data$survived <- as.factor(data$survived)
+rec <- recipe(survived ~ ., data = data) %>%
+  step_normalize(fare)
+model <- decision_tree(tree_depth = 25) %>%
+  set_engine("rpart") %>%
+  set_mode("classification")
 
-penguin_tbl <- 
-  tibble("species" = "Adelie",
-         "bill_length_mm" =  30,
-         "bill_depth_mm" =  40,
-         "flipper_length_mm" = 50,
-         "body_mass_g" = 1000)
-  
-predict(penguin_model, penguin_tbl)
+wflow <- workflow() %>%
+  add_recipe(rec) %>%
+  add_model(model)
 
-penguin_model
+
+model_fitted <- wflow %>%
+  fit(data = data)
+
+explainer <- explain_tidymodels(model_fitted, data = titanic_imputed, y = titanic_imputed$survived)
+
+modelStudio(explainer)
+
 

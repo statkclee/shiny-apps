@@ -8,26 +8,26 @@ library(DALEX)
 
 
 ui <- fluidPage(
-        theme = shinythemes::shinytheme("flatly"),
+  theme = shinythemes::shinytheme("flatly"),
   
   # 1. 옆 패널 --------------------------------------
   shiny::sidebarLayout(
     sidebarPanel(width = 2,
                  
-       tags$h4("타이타닉 생존확률"),
-       
-       tags$p("처음 뜨는데 다소 시간이 소요됩니다.....")
+                 tags$h4("타이타닉 생존확률"),
+                 
+                 tags$p("처음 뜨는데 다소 시간이 소요됩니다.....")
     ),
     
     # 2. 메인 패널 ------------------------------------
     mainPanel(width = 10,
-        shinycssloaders::withSpinner(      
-          uiOutput('dashboard')
-        )
+              shinycssloaders::withSpinner(      
+                uiOutput('dashboard')
+              )
     )
   )
 )
-  
+
 # 2. 서버 -----------------------  
 server <- function(input, output) {
   
