@@ -1,120 +1,131 @@
 library(shiny)
-library(dplyr)
-library(DT)
-library(ggplot2)
-library(reshape2)
-library(scales)
-options(scipen = 999)
+library(shinydashboard)
+library(tidymodels)
+library(tidyverse)
 
-library(showtext)
-# font_add_google(name = "Nanum Gothic", regular.wt = 400)
-showtext_auto()
 
-source("global.R")
-
-# Define UI for slider demo app ----
 ui <- fluidPage(
+        theme = shinythemes::shinytheme("flatly"),
   
-  # Sidebar layout with input and output definitions ----
-  sidebarLayout(
-    
-    # Sidebar to demonstrate various slider options ----
-    sidebarPanel(
-      
-      # Input: Simple integer interval ----
-      numericInput("principal", "원금 (대출금, 만원)", 10000, min = 0, step = 1000),
-      hr(),
-      numericInput("interest", "연 이자율 (%)", 4, min = 0, max = 100, step = 0.01),
-      hr(),
-      sliderInput("length", "대출기간 (년)",
-                  min = 0,
-                  max = 40,
-                  value = 25,
-                  step = 1
-      ),
-      hr(),
-      checkboxInput("plot", "그래프 혹은 그래프", TRUE),
-      HTML("원리금균등상환 : 원금과 이자를 합한 상환금액이 매달 동일")
+  # 1. 옆 패널 --------------------------------------
+  shiny::sidebarLayout(
+    sidebarPanel(width = 2,
+                 
+       tags$h4("팔머펭귄 성별예측 시스템"),                 
+                 
+       tags$hr(style="border-color: blue;"),      
+       
+       hr(),
+       sliderInput( "bill_length", "부리 길이(mm)",
+                    min = 30,
+                    max = 60,
+                    value = 45,
+                    step = 1
+       ),
+       sliderInput( "bill_depth", "부리 깊이(mm)",
+                    min = 10,
+                    max = 25,
+                    value = 17,
+                    step = 1
+       ),
+       sliderInput( "flipper_length", "물갈퀴 길이(mm)",
+                    min = 170,
+                    max = 250,
+                    value = 200,
+                    step = 1
+       ),
+       sliderInput( "body_mass", "체중(g)",
+                    min = 2700,
+                    max = 6300,
+                    value = 4000,
+                    step = 100
+       ),
+       tags$hr(style="border-color: blue;"),
+       actionButton("run_bttn", "성별 예측"),
+       HTML("<br/><br/>상기 입력정보를 바탕으로 펭귄 성별을 예측하고자 하면 '성별예측' 버튼을 클릭하여 확인하세요.")
     ),
     
-    # Main panel for displaying outputs ----
-    mainPanel(
-      
-      # Output: Table summarizing the values entered ----
-      uiOutput("text"),
-      br(),
-      conditionalPanel(
-        condition = "input.plot == 1",
-        plotOutput("distPlot")),
-      br(),
-      conditionalPanel(
-        condition = "input.plot != 1",
-        DT::dataTableOutput("tbl")),
-      br(),
-      p(em("공지사항: 이 Shiny 앱은 어떠한 투자정보와 추천, 혹은 금융분석에 대한 정보를 
-           담고 있지 않습니다. 이 앱은 단순히 금융정보를 제공하는 것이고 이를 활용한 
-           모든 투자는 본인이 스스로 결정한 것이라 이 앱과는 아무런 관련이 없습니다.
-           이 앱에 담긴 정보를 활용한 어떤 결정도 한국 R 사용자회와 무관합니다.")),
-      p(em("이 Shiny 앱은 Antoine Soetewey 교수 코드를 참고하였습니다.")),
-      br(),
-      br()
+    # 2. 메인 패널 ------------------------------------
+    mainPanel(width = 10,
+              
+      # 성별 예측 정보 ---------------------
+      column( width =  3,
+              tags$h2("팔머 펭귄 성별 예측"),
+              htmlOutput( "gender_predicted")
+      ),
+      # 입력 정보 ---------------------
+      column( width = 6,
+        tags$h2("팔머 펭귄 신체 입력정보"),
+        div(h3(textOutput( "bill_length_info")), align = "left"),
+        div(h3(textOutput( "bill_depth_info")), align = "left"),
+        div(h3(textOutput( "flipper_length_info")), align = "left"),
+        div(h3(textOutput( "body_mass_info")), align = "left")
+      )
     )
+    
   )
 )
-
-# Define server logic for slider examples ----
+  
+# 2. 서버 -----------------------  
 server <- function(input, output) {
   
-  output$text <- renderUI({
-    mortgage(P = input$principal, I = input$interest, L = input$length, plotData = FALSE)
-    HTML(paste0(
-      "<h3>", "대출 요약", "</h3>",
-      "<h4>", "단위: 만원", "</h3>",
-      "원금 (대출금): ", format(round(input$principal, 2), big.mark = ","),
-      "<br>",
-      "연 이자율: ", input$interest, "%",
-      "<br>",
-      "기간: ", input$length, " 년 (", input$length * 12, " 월)",
-      "<br>",
-      "<b>", "월 납부액: ", format(round(monthPay, digits = 2), big.mark = ","), "</b>",
-      "<br>",
-      "<b>", "이자포함 총금액: ", "</b>", format(round(input$principal, 0), big.mark = ","), 
-      " (원금) + ", format(round(monthPay * 12 * input$length - input$principal, 0), big.mark = ","), 
-      " (이자) = ", "<b>", format(round(monthPay * 12 * input$length, digits = 0), big.mark = ","), "</b>"
-    ))
-  })
-  
-  output$distPlot <- renderPlot({
-    mortgage(P = input$principal, I = input$interest, L = input$length, plotData = input$plot)
-  })
-  
-  # Data output
-  output$tbl <- DT::renderDataTable({
-    mortgage(P = input$principal, I = input$interest, L = input$length, plotData = FALSE)
-    df_month <- DT::datatable(data.frame(round(aDFmonth, 2)) %>% 
-                                rename( 월 = Month,
-                                        년 = Year,
-                                        대출잔액 = Balance,
-                                        월상환액 = Payment,
-                                        원금     = Principal,
-                                        이자     = Interest) %>% 
-                                 select(년, 월, 대출잔액, 월상환액, 원금, 이자),
-                              extensions = "Buttons",
-                              options = list(
-                                lengthChange = TRUE,
-                                dom = "Blrtip",
-                                buttons = c("csv", "excel", "print"),
-                                
-                                lengthMenu = list(c(-1, 10, 12, 15, 25, 50, 100), 
-                                                  c("All", "10", "12", "15", "25", "50", "100"))
-                              ),
-                              rownames = FALSE
-    ) %>%
-      formatCurrency(c("대출잔액", "월상환액", "원금", "이자"), 
-                     currency = "", interval = 3, mark = ",")
-  })
+  ## 2.0. 실행 -----------------------  
+  calc_rv <- reactiveValues(doCalc = FALSE)
 
+  observeEvent(input$run_bttn, {
+    calc_rv$doCalc <- input$run_bttn
+  })
+  
+  ## 2.1. 예측모형 -----------------------  
+  penguin_model <- readRDS(url("https://github.com/statkclee/model/raw/gh-pages/data/penguin_predictvie_model.rds", "rb"))
+  
+  penguin_tbl <- reactive({
+    tibble("species" = "Adelie",
+           "bill_length_mm" =  input$bill_length,
+           "bill_depth_mm" =  input$bill_depth,
+           "flipper_length_mm" =  input$flipper_length,
+           "body_mass_g" = input$body_mass)
+  })
+  
+  pred_sex <- reactive({
+    predict(penguin_model, penguin_tbl()) %>% unlist %>% as.character
+  })
+  
+  prob_sex <- reactive({
+    predict(penguin_model, penguin_tbl(), type="prob")[,1]
+  })
+  
+  
+  ## 2.2. 입력정보 -----------------------  
+  output$bill_length_info <- shiny::renderText({
+    paste("- 부리 길이(mm): ", input$bill_length)
+  })
+  
+  output$bill_depth_info <- shiny::renderText({
+    paste("- 부리 깊이(mm): ", input$bill_depth)
+  })
+  
+  output$flipper_length_info <- shiny::renderText({
+    paste("- 물갈퀴 길이(mm): ", input$flipper_length)
+  })
+  
+  output$body_mass_info <- shiny::renderText({
+    paste("- 체중(g): ", input$body_mass)
+  })
+  
+  ## 2.3. 출력정보 -----------------------  
+  output$gender_predicted <- renderUI({
+    
+    if (calc_rv$doCalc == FALSE) return()
+    
+    isolate({
+      HTML(paste("예측성별: ", pred_sex(), "\n",
+            "\n암컷 예측확률: ", scales::percent(as.numeric(prob_sex()), 0.1), sep = "<br/>"))
+    })
+    
+  })
+  
+  
 }
 
-# Run the application
 shinyApp(ui = ui, server = server)
