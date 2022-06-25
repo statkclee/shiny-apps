@@ -117,6 +117,13 @@ shiny_list <- list(
     text = "주택담보대출 모의시험",
     link = "https://r2bit.shinyapps.io/loans_shiny/",
     footer = "2022-06-19"
+  ),
+  tibble(
+    title = "이미지 인식",
+    image = "assets/favicon-resnet.png",
+    text = "resnet 엔진으로 이미지 내 사물 인식 ",
+    link = "https://r2bit.shinyapps.io/shiny_resnet/",
+    footer = "2022-06-25"
   ) 
 )
 

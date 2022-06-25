@@ -1,0 +1,13 @@
+name: shiny_resnet
+title: shiny_resnet
+username:
+account: r2bit
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6548313
+bundleId: 6042361
+url: https://r2bit.shinyapps.io/shiny_resnet/
+when: 1656162492.35435
+lastSyncTime: 1656162492.3544
+asMultiple: FALSE
+asStatic: FALSE
