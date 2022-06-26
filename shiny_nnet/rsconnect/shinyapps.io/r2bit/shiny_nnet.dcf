@@ -1,0 +1,13 @@
+name: shiny_nnet
+title: shiny_nnet
+username:
+account: r2bit
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6550480
+bundleId: 6043374
+url: https://r2bit.shinyapps.io/shiny_nnet/
+when: 1656212305.60025
+lastSyncTime: 1656212305.60026
+asMultiple: FALSE
+asStatic: FALSE

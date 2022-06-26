@@ -119,6 +119,13 @@ shiny_list <- list(
     footer = "2022-06-19"
   ),
   tibble(
+    title = "신경망 모형",
+    image = "assets/favicon-nnet.png",
+    text = "분류 문제에 대한 로지스틱 통계 모형 대비 신경망(Neural Network) 모형 이해",
+    link = "https://r2bit.shinyapps.io/shiny_nnet/",
+    footer = "2022-06-26"
+  ),
+  tibble(
     title = "이미지 인식",
     image = "assets/favicon-resnet.png",
     text = "resnet 엔진으로 이미지 내 사물 인식 ",
